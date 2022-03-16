@@ -1,8 +1,8 @@
-import FormModel from "../../models/FormModel";
+import FormLinkItem from "../../models/FormLinkModel";
 import LinksContainer from "../layouts/LinksContainer";
 import FormItem from "../elements/FormItem";
 
-const FormsModule: React.FC<{ title: string, formItems:FormModel[] }> = (props) => {
+const FormsLinkModule: React.FC<{ title: string, formItems:FormLinkItem[] }> = (props) => {
   return (
     <>
       <LinksContainer>
@@ -19,4 +19,4 @@ const FormsModule: React.FC<{ title: string, formItems:FormModel[] }> = (props) 
   );
 };
 
-export default FormsModule;
+export default FormsLinkModule;

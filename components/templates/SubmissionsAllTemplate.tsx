@@ -7,7 +7,7 @@ import BottomNavSubmissionAll from "../elements/BottomNavSubmissionAll";
 import BottomNavSubmissionSingle from "../elements/BottomNavSubmissionSingle";
 import BottomNavSubmissionNew from "../elements/BottomNavSubmissionNew";
 
-const LoginTemplate: React.FC<{}> = (props) => {
+const SubmissionsAllTemplate: React.FC<{}> = (props) => {
   return (
     <>  
     <BaseTemplate>
@@ -19,10 +19,10 @@ const LoginTemplate: React.FC<{}> = (props) => {
     </div>
     </BaseTemplate>
     <BottomNavLayout>
-      <BottomNavSubmissionNew />
+      <BottomNavSubmissionAll />
     </BottomNavLayout>
     </>
   );
 };
 
-export default LoginTemplate;
+export default SubmissionsAllTemplate;

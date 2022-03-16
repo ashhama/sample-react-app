@@ -17,6 +17,8 @@ const withAuth = (WrappedComponent) => {
       const token = useSelector(state => state.auth.token);
       const user = useSelector(state => state.auth.user);
       const isLoggedIn = useSelector(state => state.auth.isLoggedIn);
+
+    
       
       const protectedRoute = protectedRoutes.find(element => {
         if (Router.pathname.startsWith(element) > -1) {

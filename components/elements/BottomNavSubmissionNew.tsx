@@ -1,6 +1,8 @@
 import { ArrowCounterClockwise } from "phosphor-react";
 
-const BottomNavSubmissionNew = () => {
+const BottomNavSubmissionNew: React.FC<{
+  onSubmit?: (e: any) => void;
+}> = (props) => {
   return( 
     <div className="flex justify-between w-full" >
     
@@ -14,7 +16,7 @@ const BottomNavSubmissionNew = () => {
     <button className="w-16 h-16 rounded-lg font-semibold text-2xl border font-normal border-white text-white">
     <ArrowCounterClockwise className="mx-auto my-auto" size={30} />
       </button>
-      <button className="w-44 py-4 rounded-lg font-semibold text-2xl font-normal text-white bg-success">
+      <button onClick={props.onSubmit} className="w-44 py-4 rounded-lg font-semibold text-2xl font-normal text-white bg-success">
         Submit
       </button>
     </div>

@@ -15,7 +15,7 @@ const MainNav: React.FC<{
   justify-between
   py-3.5
   bg-white
-  shadow-sm
+  shadow
   "
     >
       <div className="container-fluid w-full flex flex-wrap items-center justify-between pl-6">

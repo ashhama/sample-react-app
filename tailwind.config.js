@@ -31,4 +31,9 @@ module.exports = {
   },
 
   plugins: [],
+    safelist: [
+    {
+      pattern: /^col-span-/,
+    },
+  ],
 };

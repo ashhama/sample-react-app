@@ -1,21 +1,36 @@
-import { useState } from "react";
-import { UseFormRegisterReturn } from "react-hook-form";
+import React from "react";
 
-const InputElement: React.FC<{ registers: UseFormRegisterReturn;  id: string; label: string; type: string; placeholder:string }> = (props) => {
+import { FieldValues, UseFormGetValues, UseFormRegisterReturn, UseFormSetValue } from "react-hook-form";
+import FormInputModel from "../../models/FormInputModel";
+
+const InputElement: React.FC<{
+  formId?: string;
+  inputValues: FormInputModel;
+  registers: UseFormRegisterReturn;
+  getValues: UseFormGetValues<FieldValues>;
+  setValue: UseFormSetValue<FieldValues>;
+}> = (props) => {
+
+  
+
   return (
     <div className="mb-10">
-      <label className="font-base text-lg leading-none text-site-gray-800" htmlFor={props.id}>
-        {props.label}
+      <label
+        className="font-base text-lg leading-none text-site-gray-800"
+        htmlFor={props.inputValues.id}
+      >
+        {props.inputValues.label}
       </label>
       <input
-        id={props.id}
-        type={props.type}
+        
+        id={props.inputValues.id}
+        type={props.inputValues.type}
         className="flex items-center h-11 px-4 w-full border border-site-grey-300 mt-3 rounded-lg focus:outline-none focus:ring-2"
-        placeholder={props.placeholder}
+        placeholder={props.inputValues.placeholder}
         {...props.registers}
       />
     </div>
   );
 };
 
-export default InputElement;
+export default React.memo(InputElement);

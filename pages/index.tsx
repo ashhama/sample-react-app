@@ -4,8 +4,8 @@ import Image from "next/image";
 import BaseTemplate from "../components/templates/BaseTemplate";
 import HeroBanner from "../components/elements/HeroBanner";
 import Heading from "../components/elements/Heading";
-import FormsModule from "../components/modules/FormsModule";
-import FormModel from "../models/FormModel";
+import FormsLinkModule from "../components/modules/FormsLinkModule";
+import FormModel from "../models/FormLinkModel";
 import BaseContainer from "../components/layouts/BaseContainer";
 import withAuth from "../auth/withAuth";
 
@@ -37,18 +37,18 @@ const Home: NextPage = () => {
               heading="Welcome"
               subheading="Please choose a form from below for your required purpose"
             />
-            <FormsModule
+            <FormsLinkModule
               title="Forms"
               formItems={[
                 new FormModel(
                   new Date().toISOString(),
                   "Club Registration Form",
-                  "/"
+                  "/form/club-registration-form"
                 ),
                 new FormModel(
                   new Date().toISOString(),
                   "Tournament Registration Form",
-                  "/"
+                  "/form/tournament-registration-form"
                 ),
               ]}
             />

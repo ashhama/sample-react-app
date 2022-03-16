@@ -7,13 +7,18 @@ import { authActions } from "../../store/auth";
 import { useDispatch, useSelector } from "react-redux";
 import AuthItem from "../../models/AuthModel";
 import { useRouter } from "next/router";
+import FormInputModel from "../../models/FormInputModel";
 
 const AuthForm = () => {
-  const { register, handleSubmit } = useForm();
+  const { register,
+    handleSubmit,
+    getValues,
+    setValue,
+    reset, } = useForm();
   const dispatch = useDispatch();
   const router = useRouter();
 
-  const onSubmit = (data) => {
+  const onSubmit = (data:any) => {
     fetch(
       "/api/login",
       {
@@ -44,10 +49,10 @@ const AuthForm = () => {
         <Heading heading="Sign In" />
         <form onSubmit={handleSubmit(onSubmit)} action="">
           <InputElement
-            label="Email"
-            id="email"
-            type="email"
-            placeholder="Enter your email"
+          
+            inputValues={new FormInputModel("email", "Email", "Enter Your Email", "email", 2, true)}
+            getValues={getValues}
+          setValue={setValue}
             registers={register("Email", {
               required: true,
               pattern: /^\S+@\S+$/i,
@@ -55,13 +60,12 @@ const AuthForm = () => {
           />
 
           <InputElement
-            label="Password"
-            id="password"
-            type="password"
-            placeholder="Enter your password"
-            registers={register("Password", {
-              required: true,
-            })}
+            inputValues={new FormInputModel("password", "Password", "Enter Your Password", "password", 2, true)}
+            getValues={getValues}
+          setValue={setValue}
+          registers={register("Password", {
+            required: true,
+          })}
           />
 
           <button

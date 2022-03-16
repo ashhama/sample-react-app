@@ -1,4 +1,4 @@
-class FormItem {
+class FormLinkItem {
   id: string;
   title: string;
   href: string;
@@ -10,4 +10,4 @@ class FormItem {
   }
 }
 
-export default FormItem;
+export default FormLinkItem;
