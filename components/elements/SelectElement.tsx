@@ -25,7 +25,7 @@ const SelectElement: React.FC<{
   const [selected, setSelected] = useState();
   
   const values = props.getValues();
-  console.log(values);
+  
   useEffect(() => {
     props.initialValue && setSelected(props.initialValue);
     props.setValue(props.registers.name, selected);
@@ -33,7 +33,7 @@ const SelectElement: React.FC<{
   }, [selected]);
 
   function onChangeHandler(e: React.FocusEvent<HTMLInputElement>) {
-    console.log('handled')
+    
   }
 
   return (

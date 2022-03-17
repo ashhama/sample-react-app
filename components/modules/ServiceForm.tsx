@@ -27,8 +27,7 @@ const ServiceForm: React.FC<{ formId:string , title:string ,formSections: FormSe
   } = useForm();
 
   useEffect(() => {
-    console.log('errors');
-    console.log(errors);
+  
   }, [errors]);
 
   //TODO: Move below function to NEXTJS API
@@ -36,8 +35,14 @@ const ServiceForm: React.FC<{ formId:string , title:string ,formSections: FormSe
     const valuesToDb = { 'service-id': props.formId ,'service-type' : props.title , date: Date.now() , ...data };
     try {
       const docRef = addDoc(collection(db, "forms"), valuesToDb);
-      console.log("written");
-      reset();
+      
+
+      //timeout function is only temporary. Will execute on result once this function is made async
+      setTimeout(
+        function() {
+          reset();
+        }, 1000);
+      
     } catch (e) {
       console.error("Error adding document: ", e);
     }
@@ -67,6 +72,7 @@ const ServiceForm: React.FC<{ formId:string , title:string ,formSections: FormSe
                     />
                   );
                 })}
+                
               </FormSection>
             );
           })}

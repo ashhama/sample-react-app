@@ -9,7 +9,7 @@ const FormSingle:React.FC<{
     const router = useRouter();
     const formSlug = router.query.formSlug;
     const form = serviceForms.find(form => form?.slug === formSlug);
-    console.log(form);
+    
 
     return ( <>
         {form && <FormTemplate form={form} />}

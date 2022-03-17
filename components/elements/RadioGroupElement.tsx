@@ -17,7 +17,7 @@ const RadioGroupElement: React.FC<{
   onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
   onChange?: (e: any) => void;
 }> = (props) => {
-  const [radio, setRadio] = React.useState("male");
+  const [radio, setRadio] = React.useState("");
 
   const handleChange = (event: any) => {
     setRadio(event.target.value);

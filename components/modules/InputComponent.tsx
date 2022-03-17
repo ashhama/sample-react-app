@@ -14,6 +14,9 @@ import RadioGroupElement from "../elements/RadioGroupElement";
 import MultiSelectElement from "../elements/MultiSelectElement";
 import SelectElement from "../elements/SelectElement";
 import FormColumn from "../layouts/FormColumn";
+import CheckboxGroupElement from "../elements/CheckboxGroupElement";
+import TermsConditionsElement from "../elements/TermsConditionsElement";
+import TextArea from "../elements/TextArea";
 
 const InputComponent: React.FC<{
   formId: string;
@@ -99,6 +102,18 @@ const InputComponent: React.FC<{
             value: props.formData,
           })}
         />
+      )  : props.inputValues.type === "textarea" ? (
+        <TextArea
+          formId={props.formId}
+          inputValues={props.inputValues}
+          getValues={props.getValues}
+          setValue={props.setValue}
+          initialValue={props.formData}
+          registers={props.register(props.inputValues.id, {
+            required: props.inputValues.required,
+            value: props.formData,
+          })}
+        />
       ) : props.inputValues.type === "radio" ? (
         <RadioGroupElement
           formId={props.formId}
@@ -111,7 +126,30 @@ const InputComponent: React.FC<{
             value: props.formData,
           })}
         />
-      ) : (
+      ): props.inputValues.type === "checkbox" ? (
+        <CheckboxGroupElement
+          formId={props.formId}
+          inputValues={props.inputValues}
+          getValues={props.getValues}
+          setValue={props.setValue}
+          initialValue={props.formData}
+          registers={props.register(props.inputValues.id, {
+            required: props.inputValues.required,
+            value: props.formData,
+          })}
+        />
+      ): props.inputValues.type === "declaration" ? (
+        <TermsConditionsElement
+          formId={props.formId}
+          inputValues={props.inputValues}
+          getValues={props.getValues}
+          setValue={props.setValue}
+          registers={props.register(props.inputValues.id, {
+            required: props.inputValues.required,
+            value: props.formData,
+          })}
+        />
+      ): (
         <InputElement
           formId={props.formId}
           inputValues={props.inputValues}

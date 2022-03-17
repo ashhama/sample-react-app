@@ -45,7 +45,7 @@ async function handler(req: any, response: any) {
           }
         })
         .catch((err) => {
-          console.log("RESPONSE.ERROR: ", err);
+          
         });
     }
 

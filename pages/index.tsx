@@ -32,7 +32,7 @@ const Home: NextPage = () => {
           />
           <FormsLinkModule title="Forms">
             {formLinks.map((form) => (
-              <FormItem {...form} />
+              <FormItem key={form.title} {...form} />
             ))}
           </FormsLinkModule>
         </BaseContainer>

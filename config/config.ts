@@ -125,13 +125,54 @@ export const serviceForms = [
       ]),
       new FormSectionModel("Coaches", [
         new FormInputModel(
-          "coaches",
+          "provide-coaching",
+          "Does your club provide coaching?",
+          "",
+          "radio",
+          2, true,
+          ['Yes', 'No']
+        ), new FormInputModel(
+          "number-of-coaches",
           "How many coaches do you have?",
           "Number of Coaches",
+          "number",
+          2
+        ), new FormInputModel(
+          "coach-level-qualification",
+          "What level qualifications do your coaches have?",
+          "Provide a brief description of the qualifications your coaches have...",
+          "textarea",
+          4,true
+        )
+      ], ), new FormSectionModel("Training", [
+        new FormInputModel(
+          "participation-level",
+          "What level does your club participate??",
+          "",
+          "checkbox",
+          4, true,
+          ['Social/Recreation', 'Competitive (Friendly)', 'Competitive (Local League)', 'Competitive (National)']
+        ),  new FormInputModel(
+          "club-training-days",
+          "Which days does your club train on?",
+          "Sunday, Tuesday, Saturday",
           "text",
           2
+        ),  new FormInputModel(
+          "monthly-membership-cost",
+          "What is the monthly cost of membership? (MVR)",
+          "Membership price",
+          "number",
+          2
+        ), new FormInputModel(
+          "declaration",
+          "Declaration",
+          "I Agree",
+          "declaration",
+          4, true,
+          [],"I am the contact for the above club and willing to have my name, address and telephone number in the club directory."
         ),
-      ]),
+      ], )
     ]
   ),
   ,

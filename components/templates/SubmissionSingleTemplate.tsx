@@ -26,7 +26,7 @@ const SubmissionSingleTemplate: React.FC<{ documentId: string }> = (props) => {
     if (docSnap.exists()) {
       
       const formData = docSnap.data();
-      console.log(formData);
+      
       const form = serviceForms.find(
         (form) => form?.id === docSnap.data()["service-id"]
       );
@@ -47,7 +47,7 @@ const SubmissionSingleTemplate: React.FC<{ documentId: string }> = (props) => {
       //handle error
     }
   } catch(error) {
-    console.log(error);
+    
   }
   };
 
