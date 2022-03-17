@@ -11,11 +11,6 @@ const FormSingle:React.FC<{
     const form = serviceForms.find(form => form?.slug === formSlug);
     console.log(form);
 
-    
-
-
-            
-
     return ( <>
         {form && <FormTemplate form={form} />}
         

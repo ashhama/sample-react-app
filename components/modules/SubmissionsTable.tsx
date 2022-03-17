@@ -1,41 +1,64 @@
 import { MagnifyingGlass } from "phosphor-react";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useTable, Column } from "react-table";
 import TableModel from "../../models/TableModel";
 import Dropdown from "../elements/Dropdown";
+import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
+import db from "../../config/firebase";
+import { useRouter } from "next/router";
 
 const SubmissionsTable: React.FC<{}> = (props) => {
-  /*const data = React.useMemo(
-    () => [
-      new TableModel('111','ashham','email','form','date','time'),
-        ,
-        new TableModel('222','ashham','email','form','date','time'),
-        new TableModel('333','ashham','email','form','date','time'),
-        new TableModel('444','ashham','email','form','date','time'),
-    ],
+  const router  = useRouter();
+  const [data, setData] = useState<TableModel[]>([]);
 
-    []
-  );*/
-  const data: TableModel[] = makeData(20);
+  const onDeleteSubmission = async (row: {
+    documentId: string;
+    rowId: number;
+  }) => {
 
-  const handleEdit = (row: TableModel) => {
-    console.log(row);
+    
+
+    const awaitResponse = await deleteDoc(doc(db, "forms", row.documentId));
+
+    setData((currentData) => {
+      const newData = [...currentData];
+      newData.splice(row.rowId, 1);
+      return newData;
+    });
   };
 
-  function newStatement(): TableModel {
-    return {
-      id: "111",
-      name: "ashham",
-      email: "email",
-      serviceType: "form",
-      date: "date",
-      time: "time",
-    };
-  }
+  const onEditSubmission = async (row: {
+    documentId: string;
+    rowId: number;
+  }) => {
+    
+    router.replace(`/submissions/${row.documentId}`);
+  };
 
-  function makeData(len: number): TableModel[] {
-    return new Array(len).fill(null).map(newStatement);
-  }
+  const getAllSubmissions = async () => {
+    const querySnapshot = await getDocs(collection(db, "forms"));
+    querySnapshot.forEach((doc) => {
+      //create date object with epoch time
+      const dateTime = new Date(doc.data().date);
+
+      setData((currentData) => [
+        ...currentData,
+        new TableModel(
+          doc.id,
+          doc.data().name,
+          doc.data().email,
+          doc.data()["service-type"],
+          dateTime.toDateString(),
+          dateTime.toTimeString()
+        ),
+      ]);
+    });
+  };
+
+  //load data only on initial page load
+  useEffect(() => {
+    getAllSubmissions();
+  }, []);
 
   const columns = React.useMemo(
     () =>
@@ -61,12 +84,16 @@ const SubmissionsTable: React.FC<{}> = (props) => {
           accessor: "time",
         },
         {
-            Header: "Actions",
-            accessor: "actions",
-            Cell: (row: { row: { original: any; }; }) => (
-                    <Dropdown/>
-                
-            )
+          Header: "Actions",
+          accessor: "actions",
+          Cell: (row: { row: any }) => (
+            <Dropdown
+              onDelete={onDeleteSubmission}
+              onEditClicked={onEditSubmission}
+              documentId={row.row.original.id}
+              rowId={row.row.index}
+            />
+          ),
         },
       ] as Column<TableModel>[],
     []
@@ -116,10 +143,7 @@ const SubmissionsTable: React.FC<{}> = (props) => {
             </div>
           </div>
           <div className="">
-            <table
-              className="min-w-full table-fixed"
-              {...getTableProps()}
-            >
+            <table className="min-w-full table-fixed" {...getTableProps()}>
               <thead className="bg-white border-y border-b-black border-t-site-gray-200">
                 {
                   // Loop over the header rows
@@ -168,7 +192,11 @@ const SubmissionsTable: React.FC<{}> = (props) => {
                       // Apply the row props
 
                       <tr
-                        className={`${index % 2 === 0 ? "bg-site-blue-100 hover:bg-site-blue-200" : "bg-white hover:bg-gray-100"}`}
+                        className={`${
+                          index % 2 === 0
+                            ? "bg-site-blue-100 hover:bg-site-blue-200"
+                            : "bg-white hover:bg-gray-100"
+                        }`}
                         {...row.getRowProps()}
                       >
                         {
@@ -179,7 +207,7 @@ const SubmissionsTable: React.FC<{}> = (props) => {
 
                             return (
                               <td
-                                className='py-4 px-8 text-sm font-normal text-left text-site-gray-800 capitalize'
+                                className="py-4 px-8 text-sm font-normal text-left text-site-gray-800 capitalize"
                                 {...cell.getCellProps()}
                               >
                                 {

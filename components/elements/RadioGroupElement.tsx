@@ -11,6 +11,7 @@ const RadioGroupElement: React.FC<{
   formId?: string;
   inputValues: FormInputModel;
   registers: UseFormRegisterReturn;
+  initialValue?:any;
   getValues: UseFormGetValues<FieldValues>;
   setValue: UseFormSetValue<FieldValues>;
   onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
@@ -25,6 +26,11 @@ const RadioGroupElement: React.FC<{
   const resetRadioState = () => {
     setRadio("");
   };
+
+  //initialize values if data provided
+  useEffect(() => {
+    setRadio(props.initialValue);
+  }, []);
 
   useEffect(() => {
     props.setValue(props.registers.name, radio);
@@ -63,4 +69,4 @@ const RadioGroupElement: React.FC<{
   );
 };
 
-export default React.memo(RadioGroupElement);
+export default RadioGroupElement;

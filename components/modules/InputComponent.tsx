@@ -21,6 +21,7 @@ const InputComponent: React.FC<{
   register: UseFormRegister<FieldValues>;
   getValues: UseFormGetValues<FieldValues>;
   setValue: UseFormSetValue<FieldValues>;
+  formData?: any;
 }> = (props) => {
 
   
@@ -67,8 +68,10 @@ const InputComponent: React.FC<{
           getValues={props.getValues}
           onChange={selectOnChangeHandler}
           setValue={props.setValue}
+          initialValue={props.formData}
           registers={props.register(props.inputValues.id, {
             required: props.inputValues.required,
+            value: props.formData,
           })}
         />
       ) : props.inputValues.type === "multi-select" ? (
@@ -78,8 +81,10 @@ const InputComponent: React.FC<{
           getValues={props.getValues}
           onChange={selectOnChangeHandler}
           setValue={props.setValue}
+          initialValue={props.formData}
           registers={props.register(props.inputValues.id, {
             required: props.inputValues.required,
+            value: props.formData,
           })}
         />
       ) : props.inputValues.type === "email" ? (
@@ -91,6 +96,7 @@ const InputComponent: React.FC<{
           registers={props.register(props.inputValues.id, {
             required: props.inputValues.required,
             pattern: /^\S+@\S+$/i,
+            value: props.formData,
           })}
         />
       ) : props.inputValues.type === "radio" ? (
@@ -99,8 +105,10 @@ const InputComponent: React.FC<{
           inputValues={props.inputValues}
           getValues={props.getValues}
           setValue={props.setValue}
+          initialValue={props.formData}
           registers={props.register(props.inputValues.id, {
             required: props.inputValues.required,
+            value: props.formData,
           })}
         />
       ) : (
@@ -111,6 +119,7 @@ const InputComponent: React.FC<{
           setValue={props.setValue}
           registers={props.register(props.inputValues.id, {
             required: props.inputValues.required,
+            value: props.formData,
           })}
         />
       )}
@@ -118,4 +127,4 @@ const InputComponent: React.FC<{
   );
 };
 
-export default React.memo(InputComponent);
+export default InputComponent;

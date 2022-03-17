@@ -1,8 +1,18 @@
 import { ArrowCounterClockwise } from "phosphor-react";
+import { FieldValues, UseFormGetValues, UseFormReset } from "react-hook-form";
 
 const BottomNavSubmissionNew: React.FC<{
   onSubmit?: (e: any) => void;
+  reset?: UseFormReset<FieldValues>;
+  getValues?: UseFormGetValues<FieldValues>
 }> = (props) => {
+
+  const resetForm = (e: any) => {
+    
+    props.reset && props.reset();
+    
+   };
+
   return( 
     <div className="flex justify-between w-full" >
     
@@ -13,7 +23,7 @@ const BottomNavSubmissionNew: React.FC<{
     </div>
 
     <div className="flex gap-x-4">
-    <button className="w-16 h-16 rounded-lg font-semibold text-2xl border font-normal border-white text-white">
+    <button onClick={resetForm} className="w-16 h-16 rounded-lg font-semibold text-2xl border font-normal border-white text-white">
     <ArrowCounterClockwise className="mx-auto my-auto" size={30} />
       </button>
       <button onClick={props.onSubmit} className="w-44 py-4 rounded-lg font-semibold text-2xl font-normal text-white bg-success">

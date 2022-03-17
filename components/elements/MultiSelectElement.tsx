@@ -11,6 +11,7 @@ import FormInputModel from "../../models/FormInputModel";
 const MultiSelectElement: React.FC<{
   formId?: string;
   inputValues: FormInputModel;
+  initialValue?:any;
   registers: UseFormRegisterReturn;
   onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
   onChange?: (e: any) => void;
@@ -177,4 +178,4 @@ const MultiSelectElement: React.FC<{
     </div>
   );
 };
-export default React.memo(MultiSelectElement);
+export default MultiSelectElement;

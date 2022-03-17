@@ -13,6 +13,7 @@ import React from "react";
 const SelectElement: React.FC<{
   formId?: string;
   inputValues: FormInputModel;
+  initialValue?:any;
   registers: UseFormRegisterReturn;
   onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
   onChange?: (e: any) => void;
@@ -22,10 +23,11 @@ const SelectElement: React.FC<{
   const items: string[] = [...props.inputValues.selectOptions ? props.inputValues.selectOptions : []];
 
   const [selected, setSelected] = useState();
-
+  
   const values = props.getValues();
-
+  console.log(values);
   useEffect(() => {
+    props.initialValue && setSelected(props.initialValue);
     props.setValue(props.registers.name, selected);
     //props.onChange && props.onChange(selected);
   }, [selected]);
@@ -92,4 +94,4 @@ const SelectElement: React.FC<{
   );
 };
 
-export default React.memo(SelectElement);
+export default SelectElement;

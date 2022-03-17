@@ -2,7 +2,8 @@ import { Menu, Transition } from '@headlessui/react'
 import { Fragment } from 'react'
 import { DotsThree, PencilLine, Trash } from 'phosphor-react'
 
-const Dropdown:React.FC<{ }> = (props) => {
+const Dropdown:React.FC<{documentId:string , rowId:number, onDelete: (e: any) => void; onEditClicked: (e: any) => void; }> = (props) => {
+  
   return (
     <div className="">
       <Menu as="div" className="relative inline-block text-left">
@@ -25,7 +26,7 @@ const Dropdown:React.FC<{ }> = (props) => {
             <div className="">
               <Menu.Item>
                 {({ active }) => (
-                  <button
+                  <button onClick={props.onEditClicked.bind(this, {documentId:props.documentId, rowId:props.rowId})} 
                     className='hover:bg-gray-100 group text-black flex rounded-md items-center w-full px-4 py-2 text-lg'
                   >
                     <PencilLine className='mr-4' color='#000000' size={26} />
@@ -35,7 +36,7 @@ const Dropdown:React.FC<{ }> = (props) => {
               </Menu.Item>
               <Menu.Item>
                 {({ active }) => (
-                  <button
+                  <button onClick={props.onDelete.bind(this, {documentId:props.documentId, rowId:props.rowId})}
                     className='hover:bg-gray-100 group text-danger flex rounded-md items-center w-full px-4 py-2 text-lg'
                   >
                     <Trash className='mr-4' color='#D21919' size={26} />

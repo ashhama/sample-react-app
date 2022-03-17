@@ -13,8 +13,10 @@ import BottomNavSubmissionNew from "../elements/BottomNavSubmissionNew";
 import BottomNavLayout from "../layouts/BottomNavLayout";
 import BaseContainer from "../layouts/BaseContainer";
 import Heading from "../elements/Heading";
+import db from "../../config/firebase";
+import { collection, addDoc } from "firebase/firestore"; 
 
-const ServiceForm: React.FC<{ formId:string , title:string ,formSections: FormSectionModel[] }> = (props) => {
+const ServiceForm: React.FC<{ formId:string , title:string ,formSections: FormSectionModel[], formData?: any, editMode?:boolean }> = (props) => {
   const {
     register,
     handleSubmit,
@@ -29,9 +31,16 @@ const ServiceForm: React.FC<{ formId:string , title:string ,formSections: FormSe
     console.log(errors);
   }, [errors]);
 
-  
+  //TODO: Move below function to NEXTJS API
   const onSubmit = (data: any) => {
-    console.log(data);
+    const valuesToDb = { 'service-id': props.formId ,'service-type' : props.title , date: Date.now() , ...data };
+    try {
+      const docRef = addDoc(collection(db, "forms"), valuesToDb);
+      console.log("written");
+      reset();
+    } catch (e) {
+      console.error("Error adding document: ", e);
+    }
   };
 
   return (
@@ -42,8 +51,10 @@ const ServiceForm: React.FC<{ formId:string , title:string ,formSections: FormSe
         <div className="divide-y divide-black gap-y-10">
           {props.formSections.map((formSection, index) => {
             return (
-              <FormSection key={index} title={formSection.title}>
+              <FormSection key={v4()} title={formSection.title}>
                 {formSection.formInputs.map((input, index) => {
+                  const formData = props.formData?.[input.id] ?? ''
+                  
                   return (
                     <InputComponent
                       formId={props.formId}
@@ -52,6 +63,7 @@ const ServiceForm: React.FC<{ formId:string , title:string ,formSections: FormSe
                       getValues={getValues}
                       setValue={setValue}
                       key={input.id}
+                      formData={formData}
                     />
                   );
                 })}
@@ -63,7 +75,7 @@ const ServiceForm: React.FC<{ formId:string , title:string ,formSections: FormSe
       </form>
       </BaseContainer>
       <BottomNavLayout>
-        <BottomNavSubmissionNew onSubmit={handleSubmit(onSubmit)} />
+        <BottomNavSubmissionNew reset={reset} onSubmit={handleSubmit(onSubmit)} />
       </BottomNavLayout>
       
     </>

@@ -2,7 +2,7 @@
 import { useRouter } from "next/router";
 import { useSelector } from "react-redux";
 
-const withAuth = (WrappedComponent) => {
+const withAuth  = (WrappedComponent) => {
   return (props) => {
 
     const protectedRoutes = ['/submissions'];

@@ -33,4 +33,4 @@ const InputElement: React.FC<{
   );
 };
 
-export default React.memo(InputElement);
+export default InputElement;

@@ -8,20 +8,16 @@ import ServiceForm from "../modules/ServiceForm";
 import ServiceFormModel from "../../models/ServiceFormModel";
 import { format } from "path";
 
-const FormTemplate: React.FC<{form:ServiceFormModel}> = (props) => {
-
- 
-
+const FormTemplate: React.FC<{ form: ServiceFormModel }> = (props) => {
   return (
     <>
       <BaseTemplate>
-          
-            
-            <ServiceForm title={props.form.title} formId={props.form.id} formSections = {props.form.formSections} />
-          
+        <ServiceForm
+          title={props.form.title}
+          formId={props.form.id}
+          formSections={props.form.formSections}
+        />
       </BaseTemplate>
-      
-
     </>
   );
 };

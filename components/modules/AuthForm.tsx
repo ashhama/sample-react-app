@@ -34,7 +34,6 @@ const AuthForm = () => {
     ).then(res => res.json())
       .then(res => {
         
-        
         if (res.token) {
           dispatch(authActions.authenticate({user: res.user ,token: res.token}));
           router.push("/");

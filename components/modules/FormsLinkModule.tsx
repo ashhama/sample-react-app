@@ -2,7 +2,7 @@ import FormLinkItem from "../../models/FormLinkModel";
 import LinksContainer from "../layouts/LinksContainer";
 import FormItem from "../elements/FormItem";
 
-const FormsLinkModule: React.FC<{ title: string, formItems:FormLinkItem[] }> = (props) => {
+const FormsLinkModule: React.FC<{ title: string }> = (props) => {
   return (
     <>
       <LinksContainer>
@@ -10,9 +10,8 @@ const FormsLinkModule: React.FC<{ title: string, formItems:FormLinkItem[] }> = (
           {props.title}
         </h3>
         <div>
-            {props.formItems.map((item) => (
-                <FormItem key={item.id} {...item}/>
-            ))}
+          {props.children}
+            
         </div>
       </LinksContainer>
     </>

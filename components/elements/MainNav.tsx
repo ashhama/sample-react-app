@@ -1,3 +1,5 @@
+import Link from "next/link";
+import React from "react";
 import MenuModel from "../../models/MenuModel";
 
 const MainNav: React.FC<{
@@ -20,6 +22,7 @@ const MainNav: React.FC<{
     >
       <div className="container-fluid w-full flex flex-wrap items-center justify-between pl-6">
         <div className="flex-grow items-center flex flex-row">
+        <Link href={'/'}> 
           <a
             className="
         flex
@@ -41,19 +44,23 @@ const MainNav: React.FC<{
               {props.brandText}
             </span>
           </a>
+          </Link>
 
           <ul className="flex flex-row pl-0 list-style-none ml-auto">
             {props.menu.map((item) => (
-                                  <li key={item.id} className="py-2 pr-12 text-2xl">
-                                  <a
-                                    href={item.href}
-                                    className="
+              <li key={item.id} className="py-2 pr-12 text-2xl">
+                <Link href={item.href}> 
+                <a
+                  
+                  className="
                                     nav-link text-gray-400 hover:text-gray-700 focus:text-gray-700 p-0
                                 "
-                                  >
-                                    {item.title}
-                                  </a>
-                                </li>
+                >
+                  
+                  {item.title}
+                </a>
+                </Link>
+              </li>
             ))}
           </ul>
         </div>
@@ -62,4 +69,4 @@ const MainNav: React.FC<{
   );
 };
 
-export default MainNav;
+export default React.memo(MainNav);
