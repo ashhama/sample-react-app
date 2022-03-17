@@ -1,23 +1,34 @@
 import { MagnifyingGlass } from "phosphor-react";
 import React, { useEffect, useState } from "react";
-import { useTable, Column } from "react-table";
+import {
+  useTable,
+  useFilters,
+  useGlobalFilter,
+  useAsyncDebounce,
+  TableInstance,
+  Column,
+  UseGlobalFiltersInstanceProps,
+} from "react-table";
 import TableModel from "../../models/TableModel";
 import Dropdown from "../elements/Dropdown";
 import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
 import db from "../../config/firebase";
 import { useRouter } from "next/router";
+import { matchSorter } from "match-sorter";
+import TableSearchElement from "../elements/TableSearchElement";
+import ClientOnlyPortal from "../layouts/ClientOnlyPortal";
+import BottomNavLayout from "../layouts/BottomNavLayout";
+import BottomNavSubmissionAll from "../elements/BottomNavSubmissionAll";
 
 const SubmissionsTable: React.FC<{}> = (props) => {
-  const router  = useRouter();
+  const router = useRouter();
   const [data, setData] = useState<TableModel[]>([]);
+  const [dataCount, setDataCount] = useState(0);
 
   const onDeleteSubmission = async (row: {
     documentId: string;
     rowId: number;
   }) => {
-
-    
-
     const awaitResponse = await deleteDoc(doc(db, "forms", row.documentId));
 
     setData((currentData) => {
@@ -31,8 +42,11 @@ const SubmissionsTable: React.FC<{}> = (props) => {
     documentId: string;
     rowId: number;
   }) => {
-    
     router.replace(`/submissions/${row.documentId}`);
+  };
+
+  const addNewSubmissionHandler = () => {
+    router.replace("/submissions/new");
   };
 
   const getAllSubmissions = async () => {
@@ -59,6 +73,11 @@ const SubmissionsTable: React.FC<{}> = (props) => {
   useEffect(() => {
     getAllSubmissions();
   }, []);
+
+  //update Number of Items on every data refresh
+  useEffect(() => {
+    setDataCount(data.length);
+  }, [data]);
 
   const columns = React.useMemo(
     () =>
@@ -99,23 +118,88 @@ const SubmissionsTable: React.FC<{}> = (props) => {
     []
   );
 
-  const tableInstance = useTable({ columns, data });
+  /* ------------- Table Setup ------------- */
+
+  // Define a default UI for filtering
+  function DefaultColumnFilter(column: {
+    filterValue: string;
+    preFilteredRows: any[];
+    setFilter: (e: any) => void;
+  }) {
+    const count = column.preFilteredRows.length;
+
+    return (
+      <input
+        value={column.filterValue || ""}
+        onChange={(e) => {
+          column.setFilter(e.target.value || undefined); // Set undefined to remove the filter entirely
+        }}
+        placeholder={`Search ${count} records...`}
+      />
+    );
+  }
+
+  const defaultColumn = React.useMemo(
+    () => ({
+      // Let's set up our default Filter UI
+      Filter: DefaultColumnFilter,
+    }),
+    []
+  );
+
+  function fuzzyTextFilterFn(rows: any[], id: any, filterValue: any) {
+    return matchSorter(rows, filterValue, { keys: [(row) => row.values[id]] });
+  }
+
+  // Let the table remove the filter if the string is empty
+  fuzzyTextFilterFn.autoRemove = (val: any) => !val;
+
+  const filterTypes = React.useMemo(
+    () => ({
+      // Add a new fuzzyTextFilterFn filter type.
+      fuzzyText: fuzzyTextFilterFn,
+      // Or, override the default text filter to use
+      // "startWith"
+      text: (rows: any[], id: any, filterValue: string) => {
+        return rows.filter((row) => {
+          const rowValue = row.values[id];
+          return rowValue !== undefined
+            ? String(rowValue)
+                .toLowerCase()
+                .startsWith(String(filterValue).toLowerCase())
+            : true;
+        });
+      },
+    }),
+    []
+  );
+
+ 
 
   const {
     getTableProps,
-
     getTableBodyProps,
-
     headerGroups,
-
     rows,
-
     prepareRow,
-  } = tableInstance;
+    state,
+    visibleColumns,
+    preGlobalFilteredRows,
+    setGlobalFilter,
+  } = useTable(
+    {
+      columns,
+      data,
+      defaultColumn, // Be sure to pass the defaultColumn option
+      filterTypes,
+    },
+    useFilters, // useFilters!
+    useGlobalFilter // useGlobalFilter!
+  );
 
   return (
     // apply the table props
-
+    <>
     <div className="flex flex-col">
       <div className="overflow-x-auto shadow-md sm:rounded-lg">
         <div className="inline-block min-w-full align-middle bg-white">
@@ -130,12 +214,13 @@ const SubmissionsTable: React.FC<{}> = (props) => {
                 Search
               </label>
               <div className="relative mt-1">
-                <input
-                  type="text"
-                  id="table-search"
-                  className="border border-site-gray-300 text-lg text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-80 pl-3 pr-10 p-2.5  placeholder-site-gray-300 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  placeholder="Search..."
-                />
+                
+                <TableSearchElement
+                
+                preGlobalFilteredRows={preGlobalFilteredRows}
+                globalFilter={state.globalFilter}
+                setGlobalFilter={setGlobalFilter}
+              />
                 <div className="flex absolute inset-y-0 right-0 items-center pr-3 pointer-events-none">
                   <MagnifyingGlass color="#D2D2D2" size={24} />
                 </div>
@@ -229,6 +314,13 @@ const SubmissionsTable: React.FC<{}> = (props) => {
         </div>
       </div>
     </div>
+    <ClientOnlyPortal selector="#portal-bottom-nav">
+        <BottomNavLayout>
+          <BottomNavSubmissionAll resultCount={dataCount} addNewSubmissionHandler={addNewSubmissionHandler} />
+        </BottomNavLayout>
+      </ClientOnlyPortal>
+    </>
+    
   );
 };
 

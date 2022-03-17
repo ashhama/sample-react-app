@@ -12,6 +12,8 @@ const BaseTemplate: React.FC<{}> = (props) => {
       </Head>
       <MainNavModule />
       <main className="w-screen h-full">{props.children}</main>
+      <div id="portal-bottom-nav" />
+      <div id="portal-modal" />
     </>
   );
 };

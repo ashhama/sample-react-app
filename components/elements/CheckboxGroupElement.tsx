@@ -21,7 +21,7 @@ const CheckboxGroupElement: React.FC<{
     ...(props.inputValues.selectOptions ? props.inputValues.selectOptions : []),
   ];
  
-  const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const [selectedItems, setSelectedItems] = useState<string[]>(props.initialValue? props.initialValue : []);
 
   function isSelected(value: any) {
     return selectedItems.find((el) => el === value) ? true : false;
@@ -66,7 +66,7 @@ const CheckboxGroupElement: React.FC<{
         </label>
         <div className="flex flex-row gap-10 mt-10 justify-between">
           {items.map((item) => (
-            <div>
+            <div key={item}>
               
               <label className="inline-flex items-center mt-3">
                 <input key={item}

@@ -5,10 +5,8 @@ import BaseTemplate from "../components/templates/BaseTemplate";
 import HeroBanner from "../components/elements/HeroBanner";
 import Heading from "../components/elements/Heading";
 import FormsLinkModule from "../components/modules/FormsLinkModule";
-import FormModel from "../models/FormLinkModel";
 import BaseContainer from "../components/layouts/BaseContainer";
 import { serviceForms } from "../config/config";
-import withAuth from "../auth/withAuth";
 import FormItem from "../components/elements/FormItem";
 
 const Home: NextPage = () => {

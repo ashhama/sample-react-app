@@ -39,6 +39,7 @@ const SubmissionSingleTemplate: React.FC<{ documentId: string }> = (props) => {
             formSections={form.formSections}
             formData={formData}
             editMode={true}
+            documentId={props.documentId}
           />
         );
       }

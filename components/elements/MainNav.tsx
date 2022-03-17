@@ -1,6 +1,8 @@
+import { V4MAPPED } from "dns";
 import Link from "next/link";
 import React from "react";
 import MenuModel from "../../models/MenuModel";
+import { v4 } from "node-uuid";
 
 const MainNav: React.FC<{
   logoUrl: string;
@@ -48,7 +50,7 @@ const MainNav: React.FC<{
 
           <ul className="flex flex-row pl-0 list-style-none ml-auto">
             {props.menu.map((item) => (
-              <li key={item.id} className="py-2 pr-12 text-2xl">
+              <li key={v4()} className="py-2 pr-12 text-2xl">
                 <Link href={item.href}> 
                 <a
                   

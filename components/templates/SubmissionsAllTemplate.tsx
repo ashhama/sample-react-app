@@ -9,18 +9,17 @@ import BottomNavSubmissionNew from "../elements/BottomNavSubmissionNew";
 
 const SubmissionsAllTemplate: React.FC<{}> = (props) => {
   return (
-    <>  
-    <BaseTemplate>
-    <div className="bg-site-gray-100 flex">
-      <BaseContainer>
-        <Heading heading="All Submissions"/>
-        <SubmissionsTable />
-      </BaseContainer>
-    </div>
-    </BaseTemplate>
-    <BottomNavLayout>
-      <BottomNavSubmissionAll />
-    </BottomNavLayout>
+    <>
+      <BaseTemplate>
+        <div className="bg-site-gray-100 flex">
+          <BaseContainer>
+            <Heading heading="All Submissions" />
+            <SubmissionsTable />
+          </BaseContainer>
+        </div>
+      </BaseTemplate>
+
+     
     </>
   );
 };

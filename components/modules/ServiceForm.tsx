@@ -1,10 +1,5 @@
 import { useForm } from "react-hook-form";
 import FormSectionModel from "../../models/FormSectionModel";
-import InputElement from "../elements/InputElement";
-import MultiSelectElement from "../elements/MultiSelectElement";
-import SelectElement from "../elements/SelectElement";
-import FormColumn from "../layouts/FormColumn";
-import FormGrid from "../layouts/FormGrid";
 import FormSection from "../layouts/FormSection";
 import InputComponent from "./InputComponent";
 import { v4 } from "node-uuid";
@@ -13,10 +8,19 @@ import BottomNavSubmissionNew from "../elements/BottomNavSubmissionNew";
 import BottomNavLayout from "../layouts/BottomNavLayout";
 import BaseContainer from "../layouts/BaseContainer";
 import Heading from "../elements/Heading";
-import db from "../../config/firebase";
-import { collection, addDoc } from "firebase/firestore"; 
+import BottomNavSubmissionSingle from "../elements/BottomNavSubmissionSingle";
+import ClientOnlyPortal from "../layouts/ClientOnlyPortal";
+import { useRouter } from "next/router";
+import { arraysEqual } from "../../config/helpers";
 
-const ServiceForm: React.FC<{ formId:string , title:string ,formSections: FormSectionModel[], formData?: any, editMode?:boolean }> = (props) => {
+const ServiceForm: React.FC<{
+  formId: string;
+  title: string;
+  formSections: FormSectionModel[];
+  formData?: any;
+  editMode?: boolean;
+  documentId?: string;
+}> = (props) => {
   const {
     register,
     handleSubmit,
@@ -26,67 +30,132 @@ const ServiceForm: React.FC<{ formId:string , title:string ,formSections: FormSe
     formState: { errors },
   } = useForm();
 
-  useEffect(() => {
-  
-  }, [errors]);
+  useEffect(() => {}, [errors]);
+
+  const router = useRouter();
 
   //TODO: Move below function to NEXTJS API
-  const onSubmit = (data: any) => {
-    const valuesToDb = { 'service-id': props.formId ,'service-type' : props.title , date: Date.now() , ...data };
-    try {
-      const docRef = addDoc(collection(db, "forms"), valuesToDb);
-      
+  const submitNewFormHandler = (data: any) => {
+    const valuesToDb = {
+      "service-id": props.formId,
+      "service-type": props.title,
+      date: Date.now(),
+      ...data,
+    };
 
-      //timeout function is only temporary. Will execute on result once this function is made async
-      setTimeout(
-        function() {
+    fetch("/api/submitform", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(valuesToDb),
+    }).then((res) => {
+      const resJson = res.json();
+      if (res.ok) {
+        resJson.then((res) => {
           reset();
-        }, 1000);
-      
-    } catch (e) {
-      console.error("Error adding document: ", e);
+        });
+      } else {
+        resJson.then((res) => {
+          console.log("error");
+        });
+      }
+    });
+  };
+
+  const cancelFormHander = () => {
+    router.replace("/submissions");
+  };
+
+  const editFormHandler = (data: any) => {
+    const differenceObjects: any = {};
+
+    for (const k in data) {
+      try {
+        if (Array.isArray(data[k])) {
+          if (!arraysEqual(data[k], props.formData[k])) {
+            differenceObjects[k] = data[k];
+          }
+        } else {
+          if (data[k] !== props.formData[k]) {
+            differenceObjects[k] = data[k];
+          }
+        }
+      } catch (e) {}
     }
+
+    fetch("/api/updateform", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        documentId: props.documentId,
+        differenceObjects: differenceObjects,
+      }),
+    }).then((res) => {
+      const resJson = res.json();
+      if (res.ok) {
+        resJson.then((res) => {
+          console.log("success");
+        });
+      } else {
+        resJson.then((res) => {
+          console.log("error");
+        });
+      }
+    });
   };
 
   return (
     <>
-    <BaseContainer>
-    <Heading heading={props.title} />
-      <form onSubmit={handleSubmit(onSubmit)} action="">
-        <div className="divide-y divide-black gap-y-10">
-          {props.formSections.map((formSection, index) => {
-            return (
-              <FormSection key={v4()} title={formSection.title}>
-                {formSection.formInputs.map((input, index) => {
-                  const formData = props.formData?.[input.id] ?? ''
-                  
-                  return (
-                    <InputComponent
-                      formId={props.formId}
-                      inputValues={input}
-                      register={register}
-                      getValues={getValues}
-                      setValue={setValue}
-                      key={input.id}
-                      formData={formData}
-                    />
-                  );
-                })}
-                
-              </FormSection>
-            );
-          })}
-        </div>
+      <BaseContainer>
+        <Heading heading={props.title} />
+        <form onSubmit={handleSubmit(submitNewFormHandler)} action="">
+          <div className="divide-y divide-black gap-y-10">
+            {props.formSections.map((formSection, index) => {
+              return (
+                <FormSection key={v4()} title={formSection.title}>
+                  {formSection.formInputs.map((input, index) => {
+                    const formData = props.formData?.[input.id] ?? "";
 
-      </form>
+                    return (
+                      <InputComponent
+                        formId={props.formId}
+                        inputValues={input}
+                        register={register}
+                        getValues={getValues}
+                        setValue={setValue}
+                        key={input.id}
+                        formData={formData}
+                      />
+                    );
+                  })}
+                </FormSection>
+              );
+            })}
+          </div>
+        </form>
       </BaseContainer>
-      <BottomNavLayout>
-        <BottomNavSubmissionNew reset={reset} onSubmit={handleSubmit(onSubmit)} />
-      </BottomNavLayout>
-      
+
+      <ClientOnlyPortal selector="#portal-bottom-nav">
+        <BottomNavLayout>
+          {props.editMode && (
+            <BottomNavSubmissionSingle
+              cancelFormHandler={cancelFormHander}
+              editFormHandler={handleSubmit(editFormHandler)}
+            />
+          )}
+          {!props.editMode && (
+            <BottomNavSubmissionNew
+              reset={reset}
+              onSubmit={handleSubmit(submitNewFormHandler)}
+            />
+          )}
+        </BottomNavLayout>
+      </ClientOnlyPortal>
     </>
   );
 };
-
 
 export default ServiceForm;
