@@ -10,12 +10,15 @@ const TextArea: React.FC<{
   registers: UseFormRegisterReturn;
   getValues: UseFormGetValues<FieldValues>;
   setValue: UseFormSetValue<FieldValues>;
+  onChangeFieldValidationHandler?: (fieldId: string, e?: React.FocusEvent<HTMLButtonElement>) => void
 }> = (props) => {
 
   const [text, setText] = React.useState("");
 
   const handleChange = (event: any) => {
     setText(event.target.value);
+    props.onChangeFieldValidationHandler && props.onChangeFieldValidationHandler(props.inputValues.id);
+    
   };
 
   const resetRadioState = () => {
@@ -31,6 +34,8 @@ const TextArea: React.FC<{
     props.setValue(props.registers.name, text);
     
   }, [text]);
+
+
 
   return (
     <div className="mb-10">

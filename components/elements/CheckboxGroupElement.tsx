@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from "react";
 import {
+  Control,
   FieldValues,
+  UseFormClearErrors,
   UseFormGetValues,
   UseFormRegisterReturn,
+  UseFormSetError,
   UseFormSetValue,
+  useWatch,
 } from "react-hook-form";
 import FormInputModel from "../../models/FormInputModel";
 
@@ -12,10 +16,14 @@ const CheckboxGroupElement: React.FC<{
   inputValues: FormInputModel;
   registers: UseFormRegisterReturn;
   initialValue?:any;
+  control?: Control<FieldValues, any>
+  setError: UseFormSetError<FieldValues>;
+  clearErrors: UseFormClearErrors<FieldValues>;
   getValues: UseFormGetValues<FieldValues>;
   setValue: UseFormSetValue<FieldValues>;
   onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
   onChange?: (e: any) => void;
+  onChangeFieldValidationHandler?: (fieldId: string, e?: React.FocusEvent<HTMLButtonElement>) => void
 }> = (props) => {
   const items: string[] = [
     ...(props.inputValues.selectOptions ? props.inputValues.selectOptions : []),
@@ -27,9 +35,27 @@ const CheckboxGroupElement: React.FC<{
     return selectedItems.find((el) => el === value) ? true : false;
   }
 
+  const onBlurHandler = (e: any) => {
+    props.registers.onBlur && props.registers.onBlur(e);
+  };
+
+
   useEffect(() => {
     props.setValue(props.registers.name, selectedItems);
     props.onChange && props.onChange(selectedItems);
+
+    //handle errors
+    if (!selectedItems) {
+      props.setError(props.registers.name, {
+        type: "manual",
+        message: "Selection Empty",
+      });
+    } else {
+      props.clearErrors(props.registers.name);
+    }
+
+      //invoke onChangeFieldValidatiorHandle
+      props.onChangeFieldValidationHandler && props.onChangeFieldValidationHandler(props.inputValues.id);
   }, [selectedItems]);
 
   function handleSelection(item: any) {
@@ -54,6 +80,19 @@ const CheckboxGroupElement: React.FC<{
 
   const values = props.getValues();
 
+   //watch for changes and clear if reset
+  const fieldWatchValue = useWatch({
+    control: props.control,
+    name: props.inputValues.id,
+  });
+
+  useEffect(() => {
+    
+    if(!fieldWatchValue){
+      setSelectedItems([]);
+    }
+     
+  },[fieldWatchValue]) 
 
   return (
     <div className="mb-10 flex">
@@ -69,7 +108,7 @@ const CheckboxGroupElement: React.FC<{
             <div key={item}>
               
               <label className="inline-flex items-center mt-3">
-                <input key={item}
+                <input onBlur={onBlurHandler} key={item}
                 type={props.inputValues.type}
                 value={item}
                 checked={isSelected(item)}

@@ -1,49 +1,97 @@
-import { Fragment, useEffect, useState } from "react";
+import React, { useRef, Fragment, useEffect, useState } from "react";
 import { Listbox, Transition } from "@headlessui/react";
+
 import {
+  Control,
   FieldValues,
+  UseFormClearErrors,
   UseFormGetValues,
   UseFormRegisterReturn,
+  UseFormSetError,
   UseFormSetValue,
+  useWatch,
 } from "react-hook-form";
 import { CaretDown, Check } from "phosphor-react";
 import FormInputModel from "../../models/FormInputModel";
-import React from "react";
 
 const SelectElement: React.FC<{
   formId?: string;
   inputValues: FormInputModel;
-  initialValue?:any;
+  setError: UseFormSetError<FieldValues>;
+  clearErrors: UseFormClearErrors<FieldValues>;
+  initialValue?: any;
   registers: UseFormRegisterReturn;
   onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
   onChange?: (e: any) => void;
   getValues: UseFormGetValues<FieldValues>;
   setValue: UseFormSetValue<FieldValues>;
+  control?: Control<FieldValues, any>
+  onChangeFieldValidationHandler?: (fieldId: string, e?: React.FocusEvent<HTMLButtonElement>) => void
 }> = (props) => {
-  const items: string[] = [...props.inputValues.selectOptions ? props.inputValues.selectOptions : []];
+  const items: string[] = [
+    ...(props.inputValues.selectOptions ? props.inputValues.selectOptions : []),
+  ];
 
   const [selected, setSelected] = useState();
+
+  let values = props.getValues()[props.inputValues.id];
   
-  const values = props.getValues();
-  
+ 
+
+  const onBlurHandler = (e: React.FocusEvent<HTMLButtonElement>) => {
+    props.registers.onBlur && props.registers.onBlur(e);
+  };
+
+
+  //watch for changes and clear if reset
+  const fieldWatchValue = useWatch({
+    control: props.control,
+    name: props.inputValues.id,
+  });
+
+  useEffect(() => {
+    
+    if(!fieldWatchValue){
+      setSelected(props.initialValue);
+    }
+     
+  },[fieldWatchValue]) 
+
+
+
   useEffect(() => {
     props.initialValue && setSelected(props.initialValue);
     props.setValue(props.registers.name, selected);
-    //props.onChange && props.onChange(selected);
-  }, [selected]);
 
-  function onChangeHandler(e: React.FocusEvent<HTMLInputElement>) {
+    if (!selected) {
+      props.setError(props.registers.name, {
+        type: "manual",
+        message: "Selection Empty",
+      });  
+    }else{
+      props.clearErrors(props.registers.name);
+    }
     
-  }
 
+    // invoke onChangeFieldValidatiorHandle
+    props.onChangeFieldValidationHandler && props.onChangeFieldValidationHandler(props.inputValues.id);
+    
+  }, [selected]);
+  
   return (
     <div className="mb-10">
-      <Listbox value={values.name} onChange={setSelected}>
+      <input type="hidden" />
+      <Listbox value={values} onChange={setSelected}>
         <Listbox.Label className="font-base text-lg leading-none text-site-gray-800">
           {props.inputValues.label}
         </Listbox.Label>
         <div className="relative mt-1">
-          <Listbox.Button className="flex items-center h-11 px-4 w-full border border-site-grey-300 mt-3 rounded-lg focus:outline-none focus:ring-2 overflow-hidden">
+          <Listbox.Button
+          {...props.registers}
+            onBlur={onBlurHandler}
+            
+            className="flex items-center h-11 px-4 w-full border border-site-grey-300 mt-3 rounded-lg focus:outline-none focus:ring-2 overflow-hidden"
+          >
             <span className="block truncate">{selected}</span>
             <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
               <CaretDown color="#CBCBCB" size={18} />

@@ -1,9 +1,9 @@
-import { useForm } from "react-hook-form";
+import { useForm, useFormState, useWatch } from "react-hook-form";
 import FormSectionModel from "../../models/FormSectionModel";
 import FormSection from "../layouts/FormSection";
 import InputComponent from "./InputComponent";
 import { v4 } from "node-uuid";
-import { useEffect } from "react";
+import { useEffect, useReducer, useState } from "react";
 import BottomNavSubmissionNew from "../elements/BottomNavSubmissionNew";
 import BottomNavLayout from "../layouts/BottomNavLayout";
 import BaseContainer from "../layouts/BaseContainer";
@@ -12,6 +12,7 @@ import BottomNavSubmissionSingle from "../elements/BottomNavSubmissionSingle";
 import ClientOnlyPortal from "../layouts/ClientOnlyPortal";
 import { useRouter } from "next/router";
 import { arraysEqual } from "../../config/helpers";
+import SectionCompletedDisplayModel from "../../models/SectionCompletedDisplayModel";
 
 const ServiceForm: React.FC<{
   formId: string;
@@ -21,16 +22,159 @@ const ServiceForm: React.FC<{
   editMode?: boolean;
   documentId?: string;
 }> = (props) => {
+  //below state input fields are typed 'any' because the incoming form fields are dynamic and not known at compile time
+
+  const completedDisplayModel: SectionCompletedDisplayModel[] = [];
+  props.formSections.forEach((section) => {
+    completedDisplayModel.push(
+      new SectionCompletedDisplayModel(section.title, false)
+    );
+  });
+
+  
+
+  const [formSectionCompletedIndicator, setFormSectionCompletedIndicator] =
+    useState<SectionCompletedDisplayModel[]>(completedDisplayModel);
+
+  const [activeInputField, setActiveInputField] = useState("");
+
+  const [formInputStatuses, setInputStatuses] = useState(
+    props.formSections.map((section) => {
+      //set this section completed indicator to false
+
+      //map form section values
+      const singleFormSectionArray = section.formInputs.map((input) => {
+        return {
+          [input.id]: props.formData
+            ? props.formData[input.id]
+              ? props.formData[input.id]
+              : null
+            : null,
+        };
+      });
+
+      const defaultValuesSection: any = {};
+      singleFormSectionArray.forEach((singleFormSection) => {
+        defaultValuesSection[Object.keys(singleFormSection)[0]] = {
+          isValid: false,
+        };
+      });
+      return defaultValuesSection;
+    })
+  );
+
+  const resetAllValues = () => {
+    //reset values of formSectionCompletedIndicator to false
+    setFormSectionCompletedIndicator(
+      props.formSections.map((section) => {
+        return new SectionCompletedDisplayModel(section.title, false);
+      })
+    );
+
+    //reset values of formInputStatuses to false
+    setInputStatuses(
+      props.formSections.map((section) => {
+        //set this section completed indicator to false
+
+        //map form section values
+        const singleFormSectionArray = section.formInputs.map((input) => {
+          return {
+            [input.id]: null,
+          };
+        });
+
+        const defaultValuesSection: any = {};
+        singleFormSectionArray.forEach((singleFormSection) => {
+          defaultValuesSection[Object.keys(singleFormSection)[0]] = {
+            isValid: false,
+          };
+        });
+        return defaultValuesSection;
+      })
+    );
+
+    reset();
+    clearErrors();
+  };
+
   const {
     register,
     handleSubmit,
+    control,
     getValues,
     setValue,
+    setError,
+    watch,
+    clearErrors,
     reset,
-    formState: { errors },
-  } = useForm();
+  } = useForm({ mode: "onChange" });
 
-  useEffect(() => {}, [errors]);
+  const { errors, dirtyFields, touchedFields } = useFormState({
+    control,
+  });
+
+  useEffect(() => {
+    //check if field is touched and has error
+    if (!errors[activeInputField]) {
+      //check for field id in form input status array
+      formInputStatuses.forEach((formInputStatus, index) => {
+        //if field id is found, set the field to valid
+        if (
+          formInputStatus[activeInputField] &&
+          !formInputStatus[activeInputField].isValid
+        ) {
+          //below is to only temporarily update the field for proper results to be fetched for allFormInputsValid field
+          formInputStatus[activeInputField].isValid = true;
+
+          setInputStatuses((currentFormInputStatus) => {
+            currentFormInputStatus[index][activeInputField].isValid = true;
+
+            return currentFormInputStatus;
+          });
+
+          //check if all form inputs are valid
+          const allFormInputsValid = Object.keys(formInputStatus).every(
+            (formInputStatusKey) => {
+              return formInputStatus[formInputStatusKey].isValid;
+            }
+          );
+
+          //set corresponding form section completed indicator to true if all form inputs are valid
+          allFormInputsValid &&
+            setFormSectionCompletedIndicator(
+              (currentFormSectionCompletedIndicator) => {
+                currentFormSectionCompletedIndicator[index].completed =
+                  allFormInputsValid;
+                return currentFormSectionCompletedIndicator;
+              }
+            );
+        }
+      });
+    } else {
+      //check for field id in form input status array
+      formInputStatuses.forEach((formInputStatus, index) => {
+        //if field id is found, set the field to invalid
+        if (
+          formInputStatus[activeInputField] &&
+          formInputStatus[activeInputField].isValid
+        ) {
+          setInputStatuses((currentFormInputStatus) => {
+            currentFormInputStatus[index][activeInputField].isValid = false;
+            return currentFormInputStatus;
+          });
+        }
+      });
+    }
+
+    
+  });
+
+  const changedFieldValidationHandler = (
+    fieldId: string,
+    e?: React.FocusEvent<HTMLButtonElement>
+  ) => {
+    setActiveInputField(fieldId);
+  };
 
   const router = useRouter();
 
@@ -115,7 +259,7 @@ const ServiceForm: React.FC<{
           <div className="divide-y divide-black gap-y-10">
             {props.formSections.map((formSection, index) => {
               return (
-                <FormSection key={v4()} title={formSection.title}>
+                <FormSection key={formSection.slug} title={formSection.title}>
                   {formSection.formInputs.map((input, index) => {
                     const formData = props.formData?.[input.id] ?? "";
 
@@ -126,8 +270,14 @@ const ServiceForm: React.FC<{
                         register={register}
                         getValues={getValues}
                         setValue={setValue}
+                        setError={setError}
+                        onChangeFieldValidationHandler={
+                          changedFieldValidationHandler
+                        }
+                        clearErrors={clearErrors}
                         key={input.id}
                         formData={formData}
+                        control={control}
                       />
                     );
                   })}
@@ -148,7 +298,8 @@ const ServiceForm: React.FC<{
           )}
           {!props.editMode && (
             <BottomNavSubmissionNew
-              reset={reset}
+              sectionCompletedIndicators={formSectionCompletedIndicator}
+              reset={resetAllValues}
               onSubmit={handleSubmit(submitNewFormHandler)}
             />
           )}

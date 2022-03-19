@@ -1,9 +1,11 @@
 import React, { useEffect } from "react";
 import {
+  Control,
   FieldValues,
   UseFormGetValues,
   UseFormRegisterReturn,
   UseFormSetValue,
+  useWatch,
 } from "react-hook-form";
 import FormInputModel from "../../models/FormInputModel";
 
@@ -12,12 +14,16 @@ const RadioGroupElement: React.FC<{
   inputValues: FormInputModel;
   registers: UseFormRegisterReturn;
   initialValue?:any;
+  control?: Control<FieldValues, any>
   getValues: UseFormGetValues<FieldValues>;
   setValue: UseFormSetValue<FieldValues>;
   onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
   onChange?: (e: any) => void;
+  onChangeFieldValidationHandler?: (fieldId: string, e?: React.FocusEvent<HTMLButtonElement>) => void
 }> = (props) => {
   const [radio, setRadio] = React.useState("");
+
+  
 
   const handleChange = (event: any) => {
     setRadio(event.target.value);
@@ -35,7 +41,26 @@ const RadioGroupElement: React.FC<{
   useEffect(() => {
     props.setValue(props.registers.name, radio);
     props.onChange && props.onChange(radio);
+    
+    //invoke onChangeFieldValidatiorHandle
+    props.onChangeFieldValidationHandler && props.onChangeFieldValidationHandler(props.inputValues.id);
+    
+    
   }, [radio]);
+
+  //watch for changes and clear if reset
+  const fieldWatchValue = useWatch({
+    control: props.control,
+    name: props.inputValues.id,
+  });
+
+  useEffect(() => {
+    
+    if(!fieldWatchValue){
+      resetRadioState();
+    }
+     
+  },[fieldWatchValue]) 
 
   const items: string[] = [
     ...(props.inputValues.selectOptions ? props.inputValues.selectOptions : []),
@@ -52,9 +77,8 @@ const RadioGroupElement: React.FC<{
         </label>
         <div className="flex flex-row gap-10 mt-10">
           {items.map((item) => (
-            <div>
+            <div key={item}>
               <input
-                key={item}
                 type={props.inputValues.type}
                 value={item}
                 checked={radio === item}
