@@ -228,7 +228,7 @@ const SubmissionsTable: React.FC<{}> = (props) => {
 
                     headerGroups.map((headerGroup, index) => (
                       // Apply the header row props
-
+                      //linter shows an error below. But key is actually passed by spreading the ...row.getRowProps()
                       <tr {...headerGroup.getHeaderGroupProps()}>
                         {
                           // Loop over the headers in each row
@@ -276,7 +276,7 @@ const SubmissionsTable: React.FC<{}> = (props) => {
 
                         return (
                           // Apply the row props
-
+                          //linter shows an error below. But key is actually passed by spreading the ...row.getRowProps()
                           <tr
                             className={`${
                               index % 2 === 0
