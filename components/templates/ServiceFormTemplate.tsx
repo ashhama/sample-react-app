@@ -1,12 +1,11 @@
-import BottomNavSubmissionNew from "../elements/BottomNavSubmissionNew";
-import Heading from "../elements/Heading";
-import BaseContainer from "../layouts/BaseContainer";
-import BottomNavLayout from "../layouts/BottomNavLayout";
-import AuthForm from "../modules/AuthForm";
+/**
+ * Main Form Submission Page Template
+ *
+ */
 import BaseTemplate from "./BaseTemplate";
 import ServiceForm from "../modules/ServiceForm";
 import ServiceFormModel from "../../models/ServiceFormModel";
-import { format } from "path";
+
 
 const FormTemplate: React.FC<{ form: ServiceFormModel }> = (props) => {
   return (

@@ -1,3 +1,8 @@
+/**
+ * Dropdown Menu. Used as action drop down for table values
+ *
+ */
+
 import { Menu, Transition } from '@headlessui/react'
 import { Fragment } from 'react'
 import { DotsThree, PencilLine, Trash } from 'phosphor-react'

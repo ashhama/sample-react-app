@@ -1,3 +1,8 @@
+/**
+ * This denotes a specific form section with its headers and appropriate containers.
+ *
+ */
+
 import { ReactElement } from "react";
 import FormSectionModel from "../../models/FormSectionModel";
 import Heading from "../elements/Heading";
@@ -10,7 +15,7 @@ interface InputSection {
 }
 
 const FormSection: React.FC<InputSection> = (props) => {
-  const childrenIds = props.children.map((child) => child.key);
+  //const childrenIds = props.children.map((child) => child.key); -> this code not used now so commented out
 
   return( 
       <div className="pt-10">

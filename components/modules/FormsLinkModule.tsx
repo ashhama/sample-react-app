@@ -1,6 +1,9 @@
-import FormLinkItem from "../../models/FormLinkModel";
+/**
+ * This is the root element which stores the links.
+ *
+ */
+
 import LinksContainer from "../layouts/LinksContainer";
-import FormItem from "../elements/FormItem";
 
 const FormsLinkModule: React.FC<{ title: string }> = (props) => {
   return (
@@ -9,10 +12,7 @@ const FormsLinkModule: React.FC<{ title: string }> = (props) => {
         <h3 className="mb-6 text-2xl leading-none font-base text-black">
           {props.title}
         </h3>
-        <div>
-          {props.children}
-            
-        </div>
+        <div>{props.children}</div>
       </LinksContainer>
     </>
   );

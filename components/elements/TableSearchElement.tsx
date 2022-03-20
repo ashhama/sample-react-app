@@ -1,3 +1,8 @@
+/**
+ * Global Search Element for React Table Element
+ *
+ */
+
 import React from "react";
 import { useAsyncDebounce } from "react-table";
 

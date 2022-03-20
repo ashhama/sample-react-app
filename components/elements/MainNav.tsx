@@ -1,4 +1,8 @@
-import { V4MAPPED } from "dns";
+/**
+ * Main Navigation Component
+ *
+ */
+
 import Link from "next/link";
 import React from "react";
 import MenuModel from "../../models/MenuModel";

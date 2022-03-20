@@ -1,3 +1,8 @@
+/**
+ * Main Login Page Template
+ *
+ */
+
 import AuthForm from "../modules/AuthForm";
 import BaseTemplate from "../templates/BaseTemplate";
 

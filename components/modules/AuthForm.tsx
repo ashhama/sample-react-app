@@ -1,3 +1,8 @@
+/**
+ * This is the login form component.
+ *
+ */
+
 import { useState, useEffect } from "react";
 import { useForm, SubmitHandler, FieldValues } from "react-hook-form";
 import InputElement from "../elements/InputElement";
@@ -8,38 +13,34 @@ import { useDispatch, useSelector } from "react-redux";
 import AuthItem from "../../models/AuthModel";
 import { useRouter } from "next/router";
 import FormInputModel from "../../models/FormInputModel";
+import Link from "next/link";
 
 const AuthForm = () => {
-  const { register,
-    handleSubmit,
-    getValues,
-    setValue,
-    reset, } = useForm();
+  const { register, handleSubmit, getValues, setValue, reset } = useForm();
   const dispatch = useDispatch();
   const router = useRouter();
 
-  const onSubmit = (data:any) => {
-    fetch(
-      "/api/login",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: data.Email,
-          password: data.Password,
-        }),
-      }
-    ).then(res => res.json())
-      .then(res => {
-        
+  //send to /api/login which will process the login request from firebase
+  const onSubmit = (data: any) => {
+    fetch("/api/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: data.Email,
+        password: data.Password,
+      }),
+    })
+      .then((res) => res.json())
+      .then((res) => {
         if (res.token) {
-          dispatch(authActions.authenticate({user: res.user ,token: res.token}));
+          dispatch(
+            authActions.authenticate({ user: res.user, token: res.token })
+          );
           router.push("/");
-        } 
-      })
-      
+        }
+      });
   };
 
   return (
@@ -48,10 +49,18 @@ const AuthForm = () => {
         <Heading heading="Sign In" />
         <form onSubmit={handleSubmit(onSubmit)} action="">
           <InputElement
-          
-            inputValues={new FormInputModel("email", "Email", "Enter Your Email", "email", 2, true)}
+            inputValues={
+              new FormInputModel(
+                "email",
+                "Email",
+                "Enter Your Email",
+                "email",
+                2,
+                true
+              )
+            }
             getValues={getValues}
-          setValue={setValue}
+            setValue={setValue}
             registers={register("Email", {
               required: true,
               pattern: /^\S+@\S+$/i,
@@ -59,12 +68,21 @@ const AuthForm = () => {
           />
 
           <InputElement
-            inputValues={new FormInputModel("password", "Password", "Enter Your Password", "password", 2, true)}
+            inputValues={
+              new FormInputModel(
+                "password",
+                "Password",
+                "Enter Your Password",
+                "password",
+                2,
+                true
+              )
+            }
             getValues={getValues}
-          setValue={setValue}
-          registers={register("Password", {
-            required: true,
-          })}
+            setValue={setValue}
+            registers={register("Password", {
+              required: true,
+            })}
           />
 
           <button
@@ -74,12 +92,11 @@ const AuthForm = () => {
             Sign In
           </button>
           <div className="flex mt-10 justify-center">
-            <a
-              className="text-site-gray-400 hover:text-grey-600 text-lg"
-              href="/"
-            >
-              Back to results
-            </a>
+            <Link href="/">
+              <a className="text-site-gray-400 hover:text-grey-600 text-lg">
+                Back to results
+              </a>
+            </Link>
           </div>
         </form>
       </div>

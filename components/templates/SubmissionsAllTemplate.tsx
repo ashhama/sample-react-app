@@ -1,11 +1,13 @@
+/**
+ * View All form submissions from this page
+ *
+ */
+
 import BaseTemplate from "./BaseTemplate";
 import BaseContainer from "../layouts/BaseContainer";
 import Heading from "../elements/Heading";
 import SubmissionsTable from "../modules/SubmissionsTable";
-import BottomNavLayout from "../layouts/BottomNavLayout";
-import BottomNavSubmissionAll from "../elements/BottomNavSubmissionAll";
-import BottomNavSubmissionSingle from "../elements/BottomNavSubmissionSingle";
-import BottomNavSubmissionNew from "../elements/BottomNavSubmissionNew";
+
 
 const SubmissionsAllTemplate: React.FC<{}> = (props) => {
   return (

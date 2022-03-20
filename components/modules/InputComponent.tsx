@@ -1,3 +1,8 @@
+/**
+ * This is the core form input handler. All form fields are generated through this handler.
+ *
+ */
+
 import React, { useEffect } from "react";
 import { formActions } from "../../store/form";
 import { useDispatch, useSelector } from "react-redux";
@@ -29,48 +34,15 @@ const InputComponent: React.FC<{
   register: UseFormRegister<FieldValues>;
   getValues: UseFormGetValues<FieldValues>;
   setValue: UseFormSetValue<FieldValues>;
-  onChangeFieldValidationHandler?: (fieldId: string, e?: React.FocusEvent<HTMLButtonElement>) => void
+  onChangeFieldValidationHandler?: (
+    fieldId: string,
+    e?: React.FocusEvent<HTMLButtonElement>
+  ) => void;
   formData?: any;
-  control: Control<FieldValues, any>
+  control: Control<FieldValues, any>;
 }> = (props) => {
 
-  
-  useEffect(() => {
-    //initially register values
-  }, [])
-
-  const dispatch = useDispatch();
-
-
-
-  function selectOnChangeHandler(value:any) {
-    
-    //validate if required (error dispatch in main handler is having issues. Will get back to this later)
-    const isValid = props.inputValues.required? (value ? true : false) : true;
-    
-    dispatch(formActions.addToStore({
-      formId: props.formId,
-      values: { id: props.inputValues.id, value: value, isValid: isValid }
-    }));
-
-  }
-
-  function onBlurHandler(e: any) {
-    
-    const value = props.getValues()[props.inputValues.id];
-    
-    //validate if required (error dispatch in main handler is having issues. Will get back to this later)
-    const isValid = props.inputValues.required? (value ? true : false) : true;
-
-    
-    //initial strategy was to communicate through redux now commented out
-    /*
-    dispatch(formActions.addToStore({
-      formId: props.formId,
-      values: { id: props.inputValues.id, value: value, isValid: isValid }
-    })); */
-  }
-
+// Pass the correct prop to the corresponsing input component. More re-factoring can be done here to make this cleaner and more structured. Will have a look at how inheritance can be used here
 
   return (
     <FormColumn span={props.inputValues.span}>
@@ -81,7 +53,6 @@ const InputComponent: React.FC<{
           setError={props.setError}
           clearErrors={props.clearErrors}
           getValues={props.getValues}
-          onChange={selectOnChangeHandler}
           setValue={props.setValue}
           initialValue={props.formData}
           onChangeFieldValidationHandler={props.onChangeFieldValidationHandler}
@@ -96,7 +67,6 @@ const InputComponent: React.FC<{
           formId={props.formId}
           inputValues={props.inputValues}
           getValues={props.getValues}
-          onChange={selectOnChangeHandler}
           setError={props.setError}
           clearErrors={props.clearErrors}
           control={props.control}
@@ -122,7 +92,7 @@ const InputComponent: React.FC<{
             value: props.formData,
           })}
         />
-      )  : props.inputValues.type === "textarea" ? (
+      ) : props.inputValues.type === "textarea" ? (
         <TextArea
           formId={props.formId}
           inputValues={props.inputValues}
@@ -149,7 +119,7 @@ const InputComponent: React.FC<{
             value: props.formData,
           })}
         />
-      ): props.inputValues.type === "checkbox" ? (
+      ) : props.inputValues.type === "checkbox" ? (
         <CheckboxGroupElement
           formId={props.formId}
           inputValues={props.inputValues}
@@ -165,7 +135,7 @@ const InputComponent: React.FC<{
             value: props.formData,
           })}
         />
-      ): props.inputValues.type === "declaration" ? (
+      ) : props.inputValues.type === "declaration" ? (
         <TermsConditionsElement
           formId={props.formId}
           inputValues={props.inputValues}
@@ -173,13 +143,15 @@ const InputComponent: React.FC<{
           clearErrors={props.clearErrors}
           getValues={props.getValues}
           setValue={props.setValue}
+          initialValue={props.formData}
+          control={props.control}
           onChangeFieldValidationHandler={props.onChangeFieldValidationHandler}
           registers={props.register(props.inputValues.id, {
             required: props.inputValues.required,
             value: props.formData,
           })}
         />
-      ): (
+      ) : (
         <InputElement
           formId={props.formId}
           inputValues={props.inputValues}

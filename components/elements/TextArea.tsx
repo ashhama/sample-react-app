@@ -1,29 +1,44 @@
+/**
+ * TextArea Element
+ *
+ */
+
 import React, { useEffect } from "react";
 
-import { FieldValues, UseFormGetValues, UseFormRegisterReturn, UseFormSetValue } from "react-hook-form";
+import {
+  FieldValues,
+  UseFormGetValues,
+  UseFormRegisterReturn,
+  UseFormSetValue,
+} from "react-hook-form";
 import FormInputModel from "../../models/FormInputModel";
 
 const TextArea: React.FC<{
   formId?: string;
   inputValues: FormInputModel;
-  initialValue?:any;
+  initialValue?: any;
   registers: UseFormRegisterReturn;
   getValues: UseFormGetValues<FieldValues>;
   setValue: UseFormSetValue<FieldValues>;
-  onChangeFieldValidationHandler?: (fieldId: string, e?: React.FocusEvent<HTMLButtonElement>) => void
+  onChangeFieldValidationHandler?: (
+    fieldId: string,
+    e?: React.FocusEvent<HTMLButtonElement>
+  ) => void;
 }> = (props) => {
+  /* Initialize Values and functions */
 
   const [text, setText] = React.useState("");
 
+  //3. invoke onChangeFieldValidatiorHandler. This updates the form component with the current field being edited.
   const handleChange = (event: any) => {
     setText(event.target.value);
-    props.onChangeFieldValidationHandler && props.onChangeFieldValidationHandler(props.inputValues.id);
-    
+    props.onChangeFieldValidationHandler &&
+      props.onChangeFieldValidationHandler(props.inputValues.id);
   };
 
-  const resetRadioState = () => {
-    setText("");
-  };
+  /* --------------------------------------- */
+
+  /* Handle Item Input */
 
   //initialize values if data provided
   useEffect(() => {
@@ -32,10 +47,9 @@ const TextArea: React.FC<{
 
   useEffect(() => {
     props.setValue(props.registers.name, text);
-    
   }, [text]);
 
-
+  /* --------------------------------------- */
 
   return (
     <div className="mb-10">

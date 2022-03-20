@@ -1,3 +1,8 @@
+/**
+ * A component with styles to make it easy to add headers/subheaders according to given style guidelines
+ *
+ */
+
 import React from "react";
 
 const Heading:React.FC<{heading?: string; subheading?: string;}> = (props) => {

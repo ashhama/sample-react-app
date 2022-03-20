@@ -1,6 +1,9 @@
+/**
+ * Keeping the class here. THis class is not used in the app. failed attempt managing the form section input bar
+ *
+ */
+
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import FormStoreDataModel from "../models/FormStoreDataModel";
-import FormStoreFormModel from "../models/FormStoreFormModel";
 import FormStoreModel from "../models/FormStoreModel";
 
 const initialState: FormStoreModel = {

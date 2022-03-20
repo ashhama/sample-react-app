@@ -1,3 +1,8 @@
+/**
+ * Root Layout for the Bottom Navigation Element
+ *
+ */
+
 const BottomNav: React.FC<{}> = (props) => {
   return (
     <>

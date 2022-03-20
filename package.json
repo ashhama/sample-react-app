@@ -33,6 +33,7 @@
     "@types/node-uuid": "^0.0.29",
     "@types/react": "17.0.40",
     "@types/react-dom": "^17.0.13",
+    "animated-tailwindcss": "^3.2.7",
     "autoprefixer": "^10.4.2",
     "eslint": "8.10.0",
     "eslint-config-next": "12.1.0",

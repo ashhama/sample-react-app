@@ -1,3 +1,8 @@
+/**
+ * Connecting Redux to Local storage to store user data.
+ *
+ */
+
 export const loadState = () => {
     try {
         const serializedState = localStorage.getItem("state");

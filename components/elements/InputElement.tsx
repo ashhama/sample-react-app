@@ -1,3 +1,8 @@
+/**
+ * Form Element for plain input fields
+ *
+ */
+
 import React from "react";
 
 import {
@@ -20,15 +25,18 @@ const InputElement: React.FC<{
     e?: React.FocusEvent<HTMLButtonElement>
   ) => void;
 }> = (props) => {
-  // invoke onChangeFieldValidatiorHandle
+  
+  
+  /* When input onChange, handle both the changefieldvalidation handler and hook-form default handler */
 
   const onChangeHandler = (e: any) => {
     props.onChangeFieldValidationHandler &&
       props.onChangeFieldValidationHandler(props.inputValues.id);
     props.registers.onChange && props.registers.onChange(e);
-    
   };
 
+  /* --------------------------------------- */
+  
   return (
     <div className="mb-10">
       <label

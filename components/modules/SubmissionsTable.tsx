@@ -1,14 +1,11 @@
+/**
+ * This is the Component Used to display submitted forms. Forms are retrieved from firebase and displayed in a table.
+ *
+ */
+
 import { MagnifyingGlass } from "phosphor-react";
 import React, { useEffect, useState } from "react";
-import {
-  useTable,
-  useFilters,
-  useGlobalFilter,
-  useAsyncDebounce,
-  TableInstance,
-  Column,
-  UseGlobalFiltersInstanceProps,
-} from "react-table";
+import { useTable, useFilters, useGlobalFilter, Column } from "react-table";
 import TableModel from "../../models/TableModel";
 import Dropdown from "../elements/Dropdown";
 import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
@@ -69,12 +66,12 @@ const SubmissionsTable: React.FC<{}> = (props) => {
     });
   };
 
-  //load data only on initial page load
+  
   useEffect(() => {
     getAllSubmissions();
   }, []);
 
-  //update Number of Items on every data refresh
+  
   useEffect(() => {
     setDataCount(data.length);
   }, [data]);
@@ -174,8 +171,6 @@ const SubmissionsTable: React.FC<{}> = (props) => {
     []
   );
 
- 
-
   const {
     getTableProps,
     getTableBodyProps,
@@ -200,127 +195,136 @@ const SubmissionsTable: React.FC<{}> = (props) => {
   return (
     // apply the table props
     <>
-    <div className="flex flex-col">
-      <div className="overflow-x-auto shadow-md sm:rounded-lg">
-        <div className="inline-block min-w-full align-middle bg-white">
-          <div className="py-4 px-8 flex justify-between">
-            <div className="flex">
-              <h3 className="text-2xl font-medium text-black my-auto">
-                Submissions Summary
-              </h3>
-            </div>
-            <div>
-              <label htmlFor="table-search" className="sr-only">
-                Search
-              </label>
-              <div className="relative mt-1">
-                
-                <TableSearchElement
-                
-                preGlobalFilteredRows={preGlobalFilteredRows}
-                globalFilter={state.globalFilter}
-                setGlobalFilter={setGlobalFilter}
-              />
-                <div className="flex absolute inset-y-0 right-0 items-center pr-3 pointer-events-none">
-                  <MagnifyingGlass color="#D2D2D2" size={24} />
+      <div className="flex flex-col">
+        <div className="overflow-x-auto shadow-md sm:rounded-lg">
+          <div className="inline-block min-w-full align-middle bg-white">
+            <div className="py-4 px-8 flex justify-between">
+              <div className="flex">
+                <h3 className="text-2xl font-medium text-black my-auto">
+                  Submissions Summary
+                </h3>
+              </div>
+              <div>
+                <label htmlFor="table-search" className="sr-only">
+                  Search
+                </label>
+                <div className="relative mt-1">
+                  <TableSearchElement
+                    preGlobalFilteredRows={preGlobalFilteredRows}
+                    globalFilter={state.globalFilter}
+                    setGlobalFilter={setGlobalFilter}
+                  />
+                  <div className="flex absolute inset-y-0 right-0 items-center pr-3 pointer-events-none">
+                    <MagnifyingGlass color="#D2D2D2" size={24} />
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-          <div className="">
-            <table className="min-w-full table-fixed" {...getTableProps()}>
-              <thead className="bg-white border-y border-b-black border-t-site-gray-200">
-                {
-                  // Loop over the header rows
+            <div className="">
+              <table className="min-w-full table-fixed" {...getTableProps()}>
+                <thead className="bg-white border-y border-b-black border-t-site-gray-200">
+                  {
+                    // Loop over the header rows
 
-                  headerGroups.map((headerGroup) => (
-                    // Apply the header row props
+                    headerGroups.map((headerGroup, index) => (
+                      // Apply the header row props
 
-                    <tr {...headerGroup.getHeaderGroupProps()}>
-                      {
-                        // Loop over the headers in each row
-
-                        headerGroup.headers.map((column) => (
-                          // Apply the header cell props
-
-                          <th
-                            scope="col"
-                            className="py-4 px-8 text-sm font-medium text-left text-site-gray-800 capitalize"
-                            {...column.getHeaderProps()}
-                          >
-                            {
-                              // Render the header
-
-                              column.render("Header")
-                            }
-                          </th>
-                        ))
-                      }
-                    </tr>
-                  ))
-                }
-              </thead>
-
-              <tbody
-                className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700"
-                {...getTableBodyProps()}
-              >
-                {
-                  // Loop over the table rows
-
-                  rows.map((row, index) => {
-                    // Prepare the row for display
-
-                    prepareRow(row);
-
-                    return (
-                      // Apply the row props
-
-                      <tr
-                        className={`${
-                          index % 2 === 0
-                            ? "bg-site-blue-100 hover:bg-site-blue-200"
-                            : "bg-white hover:bg-gray-100"
-                        }`}
-                        {...row.getRowProps()}
-                      >
+                      <tr {...headerGroup.getHeaderGroupProps()}>
                         {
-                          // Loop over the rows cells
+                          // Loop over the headers in each row
 
-                          row.cells.map((cell, index) => {
-                            // Apply the cell props
+                          headerGroup.headers.map((column) => (
+                            // Apply the header cell props
 
-                            return (
-                              <td
-                                className="py-4 px-8 text-sm font-normal text-left text-site-gray-800 capitalize"
-                                {...cell.getCellProps()}
-                              >
-                                {
-                                  // Render the cell contents
+                            <th
+                              scope="col"
+                              className="py-4 px-8 text-sm font-medium text-left text-site-gray-800 capitalize"
+                              {...column.getHeaderProps()}
+                            >
+                              {
+                                // Render the header
 
-                                  cell.render("Cell")
-                                }
-                              </td>
-                            );
-                          })
+                                column.render("Header")
+                              }
+                            </th>
+                          ))
                         }
                       </tr>
-                    );
-                  })
-                }
-              </tbody>
-            </table>
+                    ))
+                  }
+                </thead>
+
+                <tbody
+                  className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700"
+                  {...getTableBodyProps()}
+                >
+                  {
+                    // Loop over the table rows
+
+                    //if rows is empty
+                    rows.length === 0 ? (
+                      <div className="absolute inset-x-0 flex items-center w-full justify-center space-x-2 animate-pulse animate-animated animate-infinite my-14">
+                        <div className="w-8 h-8 bg-blue-400 rounded-full"></div>
+                        <div className="w-8 h-8 bg-blue-400 rounded-full"></div>
+                        <div className="w-8 h-8 bg-blue-400 rounded-full"></div>
+                      </div>
+                    ) : (
+                      rows.map((row, index) => {
+                        // Prepare the row for display
+
+                        prepareRow(row);
+
+                        return (
+                          // Apply the row props
+
+                          <tr
+                            className={`${
+                              index % 2 === 0
+                                ? "bg-site-blue-100 hover:bg-site-blue-200"
+                                : "bg-white hover:bg-gray-100"
+                            }`}
+                            {...row.getRowProps()}
+                          >
+                            {
+                              // Loop over the rows cells
+
+                              row.cells.map((cell, index) => {
+                                // Apply the cell props
+
+                                return (
+                                  <td
+                                    className="py-4 px-8 text-sm font-normal text-left text-site-gray-800 capitalize"
+                                    {...cell.getCellProps()}
+                                  >
+                                    {
+                                      // Render the cell contents
+
+                                      cell.render("Cell")
+                                    }
+                                  </td>
+                                );
+                              })
+                            }
+                          </tr>
+                        );
+                      })
+                    )
+                  }
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    <ClientOnlyPortal selector="#portal-bottom-nav">
+      <ClientOnlyPortal selector="#portal-bottom-nav">
         <BottomNavLayout>
-          <BottomNavSubmissionAll resultCount={dataCount} addNewSubmissionHandler={addNewSubmissionHandler} />
+          <BottomNavSubmissionAll
+            resultCount={dataCount}
+            addNewSubmissionHandler={addNewSubmissionHandler}
+          />
         </BottomNavLayout>
       </ClientOnlyPortal>
     </>
-    
   );
 };
 

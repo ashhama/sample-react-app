@@ -1,8 +1,12 @@
+/**
+ * This is the Core Service Form Component. Which is used to create and send new forms. And to display exisitng forms to be edited
+ *
+ */
+
 import { useForm, useFormState, useWatch } from "react-hook-form";
 import FormSectionModel from "../../models/FormSectionModel";
 import FormSection from "../layouts/FormSection";
 import InputComponent from "./InputComponent";
-import { v4 } from "node-uuid";
 import { useEffect, useReducer, useState } from "react";
 import BottomNavSubmissionNew from "../elements/BottomNavSubmissionNew";
 import BottomNavLayout from "../layouts/BottomNavLayout";
@@ -13,6 +17,8 @@ import ClientOnlyPortal from "../layouts/ClientOnlyPortal";
 import { useRouter } from "next/router";
 import { arraysEqual } from "../../config/helpers";
 import SectionCompletedDisplayModel from "../../models/SectionCompletedDisplayModel";
+import ResponseModal from "../elements/ResponseModal";
+import ModalModel from "../../models/ModalModel";
 
 const ServiceForm: React.FC<{
   formId: string;
@@ -22,8 +28,81 @@ const ServiceForm: React.FC<{
   editMode?: boolean;
   documentId?: string;
 }> = (props) => {
-  //below state input fields are typed 'any' because the incoming form fields are dynamic and not known at compile time
+  /* Initialize Success/Error Modal Controls */
+  const [modalDetailsState, setModalDetailsState] = useState(new ModalModel());
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const toggleModal = (
+    type: "success" | "error" | "warning" | "info" | "none",
+    visible: boolean = !isModalOpen
+  ) => {
+    visible
+      ? setIsModalOpen((currentModalState) => {
+          currentModalState = true;
+          setModalDetailsState((currentModalDetailsState) =>
+            currentModalDetailsState.open(
+              type == "error"
+                ? "Error"
+                : type == "success"
+                ? "Success"
+                : "Information",
+              type == "error"
+                ? "Error Processing the Request"
+                : type == "success"
+                ? "Your Submission has been saved"
+                : "",
+              type,
+              { title: "Submit a new response", url: "" },
+              { title: "View Submissions", url: "/submissions" }
+            )
+          );
+          return currentModalState;
+        })
+      : setIsModalOpen((currentModalState) => {
+          currentModalState = false;
+          setModalDetailsState((currentModalDetailsState) => {
+            return currentModalDetailsState.close();
+          });
+          return currentModalState;
+        });
+  };
 
+  /*--------------------------------------*/
+
+  /* ------------- Initialize Form Controls------------------ */
+  /* Below form controls consist of 3 components 
+1. Component that identifies the input field currently active in the form so that targeted operations can be done to it
+2. Component that keeps track of individual fields to check its validity. As checking validity is requred in realtime for the section progress tabs in the bottom navigation
+3. Component that keeps track of each completed section whos values will be passed to the bottom Navigation
+*/
+
+  //1. Initialize Component that identifies currently active input field
+  const [activeInputField, setActiveInputField] = useState("");
+
+  //2. Initialize Component that keeps track of individual fields to check its validity
+
+  //Note: below fields are purposely typed 'any' because the incoming form fields are dynamic and not known at compile time
+  const [formInputStatuses, setInputStatuses] = useState(
+    //for each form section
+    props.formSections.map((section) => {
+      //get the validity of each field in each section. Optional inputs are not checked for validity
+      const singleFormSectionArray = section.formInputs.map((input) => {
+        return {
+          [input.id]: { isValid: !input.required },
+        };
+      });
+
+      //create an object array that contains the validity of each field in each section
+      const defaultValuesSection: any = {};
+      singleFormSectionArray.forEach((singleFormSection) => {
+        defaultValuesSection[Object.keys(singleFormSection)[0]] = {
+          ...Object.values(singleFormSection)[0],
+        };
+      });
+      return defaultValuesSection;
+    })
+  );
+
+  //3. Initialize component that keeps track of each completed section whos values will be passed to the bottom Navigation
   const completedDisplayModel: SectionCompletedDisplayModel[] = [];
   props.formSections.forEach((section) => {
     completedDisplayModel.push(
@@ -31,72 +110,49 @@ const ServiceForm: React.FC<{
     );
   });
 
-  
-
   const [formSectionCompletedIndicator, setFormSectionCompletedIndicator] =
     useState<SectionCompletedDisplayModel[]>(completedDisplayModel);
 
-  const [activeInputField, setActiveInputField] = useState("");
+  /* ---------------------------------------------------------- */
 
-  const [formInputStatuses, setInputStatuses] = useState(
-    props.formSections.map((section) => {
-      //set this section completed indicator to false
-
-      //map form section values
-      const singleFormSectionArray = section.formInputs.map((input) => {
-        return {
-          [input.id]: props.formData
-            ? props.formData[input.id]
-              ? props.formData[input.id]
-              : null
-            : null,
-        };
-      });
-
-      const defaultValuesSection: any = {};
-      singleFormSectionArray.forEach((singleFormSection) => {
-        defaultValuesSection[Object.keys(singleFormSection)[0]] = {
-          isValid: false,
-        };
-      });
-      return defaultValuesSection;
-    })
-  );
-
+  /* ------------- Function to Reset the form------------------ */
   const resetAllValues = () => {
-    //reset values of formSectionCompletedIndicator to false
-    setFormSectionCompletedIndicator(
-      props.formSections.map((section) => {
-        return new SectionCompletedDisplayModel(section.title, false);
-      })
-    );
-
-    //reset values of formInputStatuses to false
+    //reset values of formInputStatuses to false except non-requred values (This is 2nd compoennt above)
     setInputStatuses(
       props.formSections.map((section) => {
-        //set this section completed indicator to false
-
         //map form section values
         const singleFormSectionArray = section.formInputs.map((input) => {
           return {
-            [input.id]: null,
+            [input.id]: { isValid: !input.required },
           };
         });
 
         const defaultValuesSection: any = {};
         singleFormSectionArray.forEach((singleFormSection) => {
           defaultValuesSection[Object.keys(singleFormSection)[0]] = {
-            isValid: false,
+            ...Object.values(singleFormSection)[0],
           };
         });
+        //re-run and return component 2. These similar functions will be made into a single function call later
         return defaultValuesSection;
       })
     );
 
+    //reset values of completed sections tracker (component 3) to false
+    setFormSectionCompletedIndicator(
+      props.formSections.map((section) => {
+        return new SectionCompletedDisplayModel(section.title, false);
+      })
+    );
+
+    //reset the hook-form component and clear any errors
     reset();
     clearErrors();
   };
 
+  /* ---------------------------------------------------------- */
+
+  /* ------------- Initialize the Hook form components. Destructure needed variables------------------ */
   const {
     register,
     handleSubmit,
@@ -113,26 +169,32 @@ const ServiceForm: React.FC<{
     control,
   });
 
+  /* ---------------------------------------------------------- */
+
+  /* ------------- Check active form Validity on every form refresh. And do the ncessary operations to set validity state to true and completed sections on bottom nav------------------ */
   useEffect(() => {
-    //check if field is touched and has error
+
+    //check if active field is in the error array returned by the hook form. If not do a valid check
     if (!errors[activeInputField]) {
-      //check for field id in form input status array
+      
       formInputStatuses.forEach((formInputStatus, index) => {
-        //if field id is found, set the field to valid
+
+        //set the active field id to valid
         if (
           formInputStatus[activeInputField] &&
           !formInputStatus[activeInputField].isValid
         ) {
-          //below is to only temporarily update the field for proper results to be fetched for allFormInputsValid field
+          
           formInputStatus[activeInputField].isValid = true;
 
+          //update the results
           setInputStatuses((currentFormInputStatus) => {
             currentFormInputStatus[index][activeInputField].isValid = true;
 
             return currentFormInputStatus;
           });
 
-          //check if all form inputs are valid
+          //check if all form inputs are valid. If so then set the section as valid and completed (Component 3 from above)
           const allFormInputsValid = Object.keys(formInputStatus).every(
             (formInputStatusKey) => {
               return formInputStatus[formInputStatusKey].isValid;
@@ -151,7 +213,8 @@ const ServiceForm: React.FC<{
         }
       });
     } else {
-      //check for field id in form input status array
+
+      //if active form field is in the error array then set the active field to invalid
       formInputStatuses.forEach((formInputStatus, index) => {
         //if field id is found, set the field to invalid
         if (
@@ -162,13 +225,23 @@ const ServiceForm: React.FC<{
             currentFormInputStatus[index][activeInputField].isValid = false;
             return currentFormInputStatus;
           });
+
+          //turn the validity off for that particular form section
+          setFormSectionCompletedIndicator(
+            (currentFormSectionCompletedIndicator) => {
+              currentFormSectionCompletedIndicator[index].completed = false;
+              return currentFormSectionCompletedIndicator;
+            }
+          );
         }
       });
     }
-
-    
   });
 
+
+/*----------------------------------------------------------------------*/
+
+/* Below is the handler passed to all input elements. this handler is used to set the current active input field */
   const changedFieldValidationHandler = (
     fieldId: string,
     e?: React.FocusEvent<HTMLButtonElement>
@@ -176,6 +249,14 @@ const ServiceForm: React.FC<{
     setActiveInputField(fieldId);
   };
 
+
+  /* ---------------------------------------------------------- */
+
+  /* ------------- Networking Functions
+  1. submitformhandler to submit a new form
+  2. Cancel Form Handler to cancel editing a form
+  3. Function that send the edit call for existing forms
+  ----------------- */
   const router = useRouter();
 
   //TODO: Move below function to NEXTJS API
@@ -197,11 +278,15 @@ const ServiceForm: React.FC<{
       const resJson = res.json();
       if (res.ok) {
         resJson.then((res) => {
-          reset();
+          //reset all values after timeout
+          setTimeout(() => {
+            resetAllValues();
+          }, 300);
+          toggleModal("success", true);
         });
       } else {
         resJson.then((res) => {
-          console.log("error");
+          toggleModal("error", true);
         });
       }
     });
@@ -241,16 +326,18 @@ const ServiceForm: React.FC<{
       const resJson = res.json();
       if (res.ok) {
         resJson.then((res) => {
-          console.log("success");
+          toggleModal("success", true);
         });
       } else {
         resJson.then((res) => {
-          console.log("error");
+          resetAllValues();
+          toggleModal("error", true);
         });
       }
     });
   };
 
+  /* ---------------------------------------------------------- */
   return (
     <>
       <BaseContainer>
@@ -288,6 +375,7 @@ const ServiceForm: React.FC<{
         </form>
       </BaseContainer>
 
+{/* -------------------Set Bottom Nav in the portals set in the Base Container-------------------- */}
       <ClientOnlyPortal selector="#portal-bottom-nav">
         <BottomNavLayout>
           {props.editMode && (
@@ -304,6 +392,14 @@ const ServiceForm: React.FC<{
             />
           )}
         </BottomNavLayout>
+      </ClientOnlyPortal>
+      {/* -------------------Set Modals portals set in the Base Container-------------------- */}
+      <ClientOnlyPortal selector="#portal-modal">
+        <ResponseModal
+          isModalOpen={isModalOpen}
+          modalState={modalDetailsState}
+          toggleModal={toggleModal}
+        />
       </ClientOnlyPortal>
     </>
   );

@@ -1,3 +1,8 @@
+/**
+ * Multi Select Component
+ *
+ */
+
 import React, { useEffect, useState } from "react";
 import { Listbox, Transition } from "@headlessui/react";
 import {
@@ -23,12 +28,15 @@ const MultiSelectElement: React.FC<{
   onChange?: (e: any) => void;
   getValues: UseFormGetValues<FieldValues>;
   setValue: UseFormSetValue<FieldValues>;
-  control?: Control<FieldValues, any>
+  control?: Control<FieldValues, any>;
   onChangeFieldValidationHandler?: (
     fieldId: string,
     e?: React.FocusEvent<HTMLButtonElement>
   ) => void;
 }> = (props) => {
+  
+  /* Initialize Values and functions */
+  
   const items: string[] = [
     ...(props.inputValues.selectOptions ? props.inputValues.selectOptions : []),
   ];
@@ -39,16 +47,24 @@ const MultiSelectElement: React.FC<{
     return selectedItems.find((el) => el === value) ? true : false;
   }
 
+  //passes object onblur function to hook-form on blur function
   const onBlurHandler = (e: React.FocusEvent<HTMLButtonElement>) => {
     props.registers.onBlur && props.registers.onBlur(e);
   };
 
+  const values = props.getValues()[props.inputValues.id];
+
+  /* --------------------------------------- */
+
+  /* Handle Item Selection */
+
   useEffect(() => {
+    //1. update the form state when value is selected and invoke any handlers
     props.setValue(props.registers.name, selectedItems);
     props.onChange && props.onChange(selectedItems);
 
-    //handle errors
-    if (!selectedItems) {
+    //2. Handle Errors
+    if (selectedItems.length === 0) {
       props.setError(props.registers.name, {
         type: "manual",
         message: "Selection Empty",
@@ -57,16 +73,22 @@ const MultiSelectElement: React.FC<{
       props.clearErrors(props.registers.name);
     }
 
-    // invoke onChangeFieldValidatiorHandle
+    //3. invoke onChangeFieldValidatiorHandler. This updates the form component with the current field being edited.
     props.onChangeFieldValidationHandler &&
       props.onChangeFieldValidationHandler(props.inputValues.id);
   }, [selectedItems]);
 
+  /* --------------------------------------- */
+
+  /* Item handler operations */
+
   function handleSelection(item: any) {
+    //get the selected result on selection
     const selectedResult = selectedItems.filter(
       (selected) => selected === item
     );
 
+    //remove or add items according to the selected elements
     if (selectedResult.length) {
       removeItem(item);
     } else {
@@ -81,30 +103,25 @@ const MultiSelectElement: React.FC<{
     setSelectedItems(removedSelection);
   }
 
-  const values = props.getValues();
+  /* -------------------------- */
 
-   //watch for changes and clear if reset
-   const fieldWatchValue = useWatch({
+  /* Watch for Changes in the field and reset value in the event that the form is reset */
+  const fieldWatchValue = useWatch({
     control: props.control,
     name: props.inputValues.id,
   });
 
   useEffect(() => {
-    
-    if(!fieldWatchValue){
+    if (!fieldWatchValue) {
       setSelectedItems([items[0]]);
     }
-     
-  },[fieldWatchValue]) 
+  }, [fieldWatchValue]);
+
+  /* -------------------------- */
 
   return (
     <div className="mb-10">
-      <Listbox
-        as="div"
-        className=""
-        value={values.name}
-        onChange={handleSelection}
-      >
+      <Listbox as="div" className="" value={values} onChange={handleSelection}>
         {({ open }) => (
           <>
             <Listbox.Label className="font-base text-lg leading-none text-site-gray-800">

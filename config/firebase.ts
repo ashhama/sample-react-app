@@ -33,9 +33,9 @@ const firebaseConfig = {
 };
 
 
-// Initialize Firebase
+// Initialize and export Firebase DB
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 export default db;
-// Get a list of cities from your database
+
 

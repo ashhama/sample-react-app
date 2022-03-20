@@ -1,3 +1,8 @@
+/**
+ * Redux Authentication Store consists of JWT Token, username and isloggedin status
+ *
+ */
+
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import AuthItem from "../models/AuthModel";
 

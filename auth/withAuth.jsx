@@ -1,3 +1,4 @@
+/* eslint-disable react/display-name */
 // HOC/withAuth.jsx
 import { useRouter } from "next/router";
 import { useSelector } from "react-redux";

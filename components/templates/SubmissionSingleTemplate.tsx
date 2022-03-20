@@ -1,3 +1,8 @@
+/**
+ * View All form submissions from this page
+ *
+ */
+
 import BaseTemplate from "./BaseTemplate";
 import { doc, getDoc } from "firebase/firestore";
 import db from "../../config/firebase";
@@ -6,13 +11,7 @@ import { serviceForms } from "../../config/config";
 import ServiceForm from "../modules/ServiceForm";
 
 const SubmissionSingleTemplate: React.FC<{ documentId: string }> = (props) => {
-  /*
-    <ServiceForm
-          title={props.form.title}
-          formId={props.form.id}
-          formSections={props.form.formSections}
-        />
-  */
+  
   
   const [serviceForm, setServiceForm] = useState(<div>Loading...</div>);
 

@@ -1,3 +1,8 @@
+/**
+ * Hero Banner in home page
+ *
+ */
+
 const HeroBanner: React.FC<{ imageUrl: string;}> = (
   props
 ) => {

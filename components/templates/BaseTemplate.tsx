@@ -1,3 +1,8 @@
+/**
+ * Base Page Template Element which has the page Headers, Menubar, body, and portal references
+ *
+ */
+
 import MainNavModule from "../modules/MainNavModule";
 import Head from "next/head";
 

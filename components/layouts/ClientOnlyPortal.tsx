@@ -1,18 +1,27 @@
-import { useRef, useEffect, useState } from 'react'
-import { createPortal } from 'react-dom'
+/**
+ * Server Side Rendering Causes Issues for Portals. This is the solution provided by React Team to render portals only on Client end
+ *
+ */
 
-const ClientOnlyPortal: React.FC<{selector:string}> = (props) => {
+import { useRef, useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 
-  const ref = useRef<Element | null>()
-  
-  const [mounted, setMounted] = useState(false)
+const ClientOnlyPortal: React.FC<{ selector: string }> = (props) => {
+  const ref = useRef<Element | null>();
+
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    ref.current = document.querySelector(props.selector)
-    setMounted(true)
-  }, [props.selector])
+    ref.current = document.querySelector(props.selector);
+    setMounted(true);
+  }, [props.selector]);
 
-  return mounted ? createPortal(props.children, ref.current ? ref.current:document.createElement('div')) : null
-}
+  return mounted
+    ? createPortal(
+        props.children,
+        ref.current ? ref.current : document.createElement("div")
+      )
+    : null;
+};
 
 export default ClientOnlyPortal;

@@ -1,3 +1,8 @@
+/**
+ * Radio Group Element
+ *
+ */
+
 import React, { useEffect } from "react";
 import {
   Control,
@@ -21,34 +26,46 @@ const RadioGroupElement: React.FC<{
   onChange?: (e: any) => void;
   onChangeFieldValidationHandler?: (fieldId: string, e?: React.FocusEvent<HTMLButtonElement>) => void
 }> = (props) => {
-  const [radio, setRadio] = React.useState("");
 
-  
+  /* Initialize Values */
+
+  const [radio, setRadio] = React.useState(props.initialValue? props.initialValue : "");
+  const items: string[] = [
+    ...(props.inputValues.selectOptions ? props.inputValues.selectOptions : []),
+  ];
+
+  /* --------------------------------------- */
+
+  /* Initialize Function Handlers*/
 
   const handleChange = (event: any) => {
     setRadio(event.target.value);
   };
 
   const resetRadioState = () => {
-    setRadio("");
+    setRadio(props.initialValue? props.initialValue : "");
   };
 
-  //initialize values if data provided
+  /* --------------------------------------- */
+
+  //set default/initially provided values on first load
   useEffect(() => {
     setRadio(props.initialValue);
   }, []);
 
+  /* Handle Item Selection */
   useEffect(() => {
+    //1. update the form state when value is seleected and invoke any handlers
     props.setValue(props.registers.name, radio);
     props.onChange && props.onChange(radio);
     
-    //invoke onChangeFieldValidatiorHandle
+    //3. invoke onChangeFieldValidatiorHandler. This updates the form component with the current field being edited.
     props.onChangeFieldValidationHandler && props.onChangeFieldValidationHandler(props.inputValues.id);
     
     
   }, [radio]);
 
-  //watch for changes and clear if reset
+  /* Watch for Changes in the field and reset value in the event that the form is reset */
   const fieldWatchValue = useWatch({
     control: props.control,
     name: props.inputValues.id,
@@ -62,9 +79,7 @@ const RadioGroupElement: React.FC<{
      
   },[fieldWatchValue]) 
 
-  const items: string[] = [
-    ...(props.inputValues.selectOptions ? props.inputValues.selectOptions : []),
-  ];
+
 
   return (
     <div className="mb-10 flex">
@@ -77,14 +92,16 @@ const RadioGroupElement: React.FC<{
         </label>
         <div className="flex flex-row gap-10 mt-10">
           {items.map((item) => (
-            <div key={item}>
+            <div className="flex" key={item}>
+              <span className="ml-2 mr-4 mb-1 text-lg">{item}</span>
               <input
                 type={props.inputValues.type}
                 value={item}
+                className="h-5 w-5 accent-gray-500 mt-1"
                 checked={radio === item}
                 onChange={handleChange}
               />{" "}
-              {item}
+              
             </div>
           ))}
         </div>
